@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Giudice extends Utente{
     //attributi usati per le relazioni
-    ArrayList<Voto> Voti= new Arraylist<Voto>();
+    ArrayList<Voto> Voti= new ArrayList<Voto>();
     ArrayList<Commento> Commenti = new ArrayList<Commento>();
 
     public Giudice(Utente user) {
