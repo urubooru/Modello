@@ -1,38 +1,38 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Team {
     private String nome;
     private ArrayList<Partecipante> membri;
     private ArrayList<Documento> documenti;
-    private int punteggio;
+    private ArrayList<Voto> voti;
+    private Classifica classifica;
 
-    public Team(String nome, Partecipante p) {
+    public Team(String nome, Classifica classifica) {
         this.nome = nome;
         this.membri = new ArrayList<>();
-        this.membri.add(p);
         this.documenti = new ArrayList<>();
-        this.punteggio = 0;
+        this.voti = new ArrayList<>();
+        this.classifica = classifica;
+        classifica.aggiungiTeam(this);
     }
 
-    public float getPunteggio() {
-        int punteggioTot, numeroVoti;
-        for (/*Voto v: voti (voti è un arraylist)*/) {
-            //punteggioTot += v.getValore();
-            numeroVoti++;
+    public int getPunteggio() {
+        if (voti.isEmpty()) return 0;
+        int sum = 0;
+        for (Voto voto : voti) {
+            sum += voto.getValore();
         }
-
-        return ((float)punteggioTot /(float)numeroVoti);
+        return sum / voti.size();
     }
 
-    public void pubblicaDocumento(Date data, String descrizione) {
-        Documento doc = new Documento(data, descrizione);
-        documenti.add(doc);
+    public void aggiungiMembro(Partecipante partecipante) {
+        membri.add(partecipante);
+        partecipante.setTeam(this);
     }
 
-    public void aggiungiMembro(Partecipante p) {
-        membri.add(p);
+    public ArrayList<Documento> getDocumenti() {
+        return new ArrayList<>(documenti);
     }
 }

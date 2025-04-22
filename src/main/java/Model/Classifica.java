@@ -1,31 +1,35 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
-public class        Classifica {
+public class Classifica {
+    private Hackathon hackathon;
     private ArrayList<Team> teams;
 
-    public Classifica() {
-        teams = new ArrayList<>();
+    public Classifica(Hackathon hackathon) {
+        this.hackathon = hackathon;
+        this.teams = new ArrayList<>();
+    }
+
+    public void aggiornaClassifica() {
+        int n = teams.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (teams.get(j).getPunteggio() < teams.get(j + 1).getPunteggio()) {
+                    Team temp = teams.get(j);
+                    teams.set(j, teams.get(j + 1));
+                    teams.set(j + 1, temp);
+                }
+            }
+        }
+    }
+
+    public ArrayList<Team> getClassifica() {
+        aggiornaClassifica();
+        return new ArrayList<>(teams);
     }
 
     public void aggiungiTeam(Team team) {
         teams.add(team);
-    }
-
-    public ArrayList<Team> getClassifica() {
-        // Ordina i team per punteggio decrescente
-
-        //magari non importiamo ne collections ne comparator ma facciamo un bubble sort arraylist
-        // https://stackoverflow.com/questions/30951974/basic-bubble-sort-with-arraylist-in-java
-        Collections.sort(teams, new Comparator<Team>() {
-            @Override
-            public int compare(Team t1, Team t2) {
-                return Integer.compare(t2.getPunteggio(), t1.getPunteggio());
-            }
-        });
-        return teams;
     }
 }

@@ -8,34 +8,43 @@ public class Hackathon {
     private String sede;
     private Date dataInizio;
     private Date dataFine;
-    private Date dataInizioIscrizioni;
-    private Date dataFineIscrizioni;
+    private Date inizioIscrizioni;
+    private Date fineIscrizioni;
     private int maxIscritti;
     private int dimMaxTeam;
+    private String problema;
     private ArrayList<Team> teams;
+    private ArrayList<Giudice> giudici;
+    private Organizzatore organizzatore;
     private Classifica classifica;
 
     public Hackathon(String titolo, String sede, Date dataInizio, Date dataFine,
-                     Date dataInizioIscrizioni, Date dataFineIscrizioni,
-                     int maxIscritti, int dimMaxTeam) {
+                     Date inizioIscrizioni, Date fineIscrizioni, int maxIscritti,
+                     int dimMaxTeam, Organizzatore organizzatore) {
         this.titolo = titolo;
         this.sede = sede;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
-        this.dataInizioIscrizioni = dataInizioIscrizioni;
-        this.dataFineIscrizioni = dataFineIscrizioni;
+        this.inizioIscrizioni = inizioIscrizioni;
+        this.fineIscrizioni = fineIscrizioni;
         this.maxIscritti = maxIscritti;
         this.dimMaxTeam = dimMaxTeam;
+        this.organizzatore = organizzatore;
         this.teams = new ArrayList<>();
-        this.classifica = new Classifica();
+        this.giudici = new ArrayList<>();
+        this.classifica = new Classifica(this);
     }
 
-    public String getTitolo() { return titolo; }
-    public String getSede() { return sede; }
-    public String getDate() { return "Data inizio: " + dataInizio + " Data fine: " + dataFine; }
-    public String getDateIscrizioni() { return "Data inizio iscrizioni: " + dataInizioIscrizioni +
-            " Data fine iscrizioni: " + dataFineIscrizioni; }
-    public int getMaxIscritti() { return maxIscritti; }
-    public int getDimMaxTeam() { return dimMaxTeam; }
-    public Classifica getClassifica() { return classifica; }
+    public void aggiungiGiudice(Giudice giudice) {
+        giudici.add(giudice);
+    }
+
+    public void setProblema(String problema) {
+        this.problema = problema;
+    }
+
+    // Altri getter...
+    public Classifica getClassifica() {
+        return classifica;
+    }
 }

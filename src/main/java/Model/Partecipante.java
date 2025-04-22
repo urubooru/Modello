@@ -13,7 +13,7 @@ public class Partecipante extends Utente{
     }
 
     public Team getTeam(){ return this.team; }
-    private void setTeam(Team team){ this.team = team; }
+    void setTeam(Team team){ this.team = team; }
 
     private void setInvitoTeam(String invito){ this.invitoTeam = invito; }
 
