@@ -7,6 +7,7 @@ public class Team {
     private ArrayList<Partecipante> membri;
     private ArrayList<Documento> documenti;
     private ArrayList<Voto> voti;
+    private Hackathon hackathon;
     private Classifica classifica;
 
     public Team(String nome, Classifica classifica) {
@@ -25,6 +26,10 @@ public class Team {
             sum += voto.getValore();
         }
         return sum / voti.size();
+    }
+
+    public void iscriviHackathon(Hackathon hackathon) {
+        this.hackathon = hackathon;
     }
 
     public void aggiungiMembro(Partecipante partecipante) {
