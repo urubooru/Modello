@@ -1,5 +1,8 @@
 package gui;
 
+import Model.Utente;
+import controller.HackathonController;
+
 import javax.swing.*;
 
 public class GUIInviti {
@@ -8,4 +11,18 @@ public class GUIInviti {
     private JComboBox tipoInvito;
     private JButton accettaButton;
     private JButton rifiutaButton;
+    public JLabel GUIinviti;
+    public JPanel guiPanel;
+
+    private HackathonController controller;
+
+    public GUIInviti(HackathonController c, Utente utente) {
+        controller = c;
+
+        JFrame invitiFrame = new JFrame("GUI inviti");
+        invitiFrame.setContentPane(guiPanel);
+        invitiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        invitiFrame.pack();
+        invitiFrame.setLocationRelativeTo(null);
+        invitiFrame.setVisible(true);    }
 }

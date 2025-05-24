@@ -19,7 +19,7 @@ public class UserInterface {
     private JButton giudiceButton;
     private JComboBox hackathons;
     private JLabel invites;
-    private JButton VAIButton;
+    private JButton inviteButton;
     private JTextField newpassTxtF;
     private JButton CAMBIAButton;
     private JButton REFRESHButton;
@@ -108,6 +108,15 @@ public class UserInterface {
                 HUDGiudice hudGiudice = new HUDGiudice(c, utente);
                 hudGiudice.giudicePanel.setVisible(true);
                 hudGiudice.hackathonPanel.setVisible(true);
+            }
+        });
+
+        inviteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                GUIInviti invite = new GUIInviti(controller, utente);
+                invite.GUIinviti.setVisible(true);
+                invite.guiPanel.setVisible(true);
             }
         });
     }
