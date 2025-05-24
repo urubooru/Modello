@@ -1,19 +1,21 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class UserInterface {
     public JPanel userInterface;
-    private JButton buttonP;
-    private JButton buttonO;
-    private JButton buttonG;
+    private JPanel buttons;
+    private JTable hackathonTable;
+    private JButton partecipanteButton;
+    private JButton organizzatoreButton;
+    private JButton giudiceButton;
+    private JComboBox hackathons;
+    private JLabel invites;
+    private JButton VAIButton;
 
     private HackathonController controller;
 
@@ -35,5 +37,9 @@ public class UserInterface {
 
         this.controller = c;
 
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }
