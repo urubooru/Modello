@@ -18,7 +18,11 @@ public class Utente {
     public String getUsername(){ return username; }
     protected void setUsername(String newUser){ this.username = newUser; }
 
-    protected void setPassword(String password){ this.password = password; }
+    public void setPassword(String password){
+        if(password.isEmpty() || password==null)
+            throw new RuntimeException("Password vuota");
+        this.password = password;
+    }
     public String getPassword(){ return password; }
 
     //to be added

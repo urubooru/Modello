@@ -19,6 +19,10 @@ public class Team {
         classifica.aggiungiTeam(this);
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public int getPunteggio() {
         if (voti.isEmpty()) return 0;
         int sum = 0;

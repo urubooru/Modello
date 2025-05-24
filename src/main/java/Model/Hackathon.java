@@ -17,6 +17,7 @@ public class Hackathon {
     private ArrayList<Giudice> giudici;
     private Organizzatore organizzatore;
     private Classifica classifica;
+    private boolean classificaPubblicata;
 
     public Hackathon(String titolo, String sede, Date dataInizio, Date dataFine,
                      Date inizioIscrizioni, Date fineIscrizioni, int maxIscritti,
@@ -33,6 +34,7 @@ public class Hackathon {
         this.teams = new ArrayList<>();
         this.giudici = new ArrayList<>();
         this.classifica = new Classifica(this);
+        this.classificaPubblicata = false;
     }
 
     public void aggiungiGiudice(Giudice giudice) {
@@ -43,8 +45,14 @@ public class Hackathon {
         this.problema = problema;
     }
 
+    public void pubblicaClassifica(){
+        this.classificaPubblicata = true;
+    }
+
     // Altri getter...
+    public String getTitolo() { return titolo; }
     public Classifica getClassifica() {
+        if(!(this.classificaPubblicata)) throw new RuntimeException("Classifica non pubblicata");
         return classifica;
     }
 }

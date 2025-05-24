@@ -1,5 +1,6 @@
 package gui;
 
+import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -31,11 +32,10 @@ public class LoginForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if(c.login(userTextField.getText(), passwordField.getText())) {
-                        UserInterface userInt = new UserInterface(c, frame);
-                        userInt.userInterface.setVisible(true);
-                        frame.setVisible(false);
-                    }
+                    Utente user = c.login(userTextField.getText(), passwordField.getText());
+                    UserInterface userInt = new UserInterface(c, frame, user);
+                    userInt.userInterface.setVisible(true);
+                    frame.setVisible(false);
                 } catch (RuntimeException e1) {
                     JOptionPane.showMessageDialog(loginPanel, "Error: " + e1.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
                 }
