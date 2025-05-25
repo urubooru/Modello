@@ -4,6 +4,8 @@ import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class HUDGiudice {
     public JPanel hackathonPanel;
@@ -28,5 +30,13 @@ public class HUDGiudice {
         giudiceFrame.pack();
         giudiceFrame.setLocationRelativeTo(null);
         giudiceFrame.setVisible(true);
+
+        visualizzaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                documentiTeam docGui = new documentiTeam(c, utente, teams.getSelectedItem());
+                docGui.documentiPanel.setVisible(true);
+            }
+        });
     }
 }

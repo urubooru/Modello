@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Classifica {
     private Hackathon hackathon;
     private ArrayList<Team> teams;
+    private boolean classificaPubblicata;
 
     public Classifica(Hackathon hackathon) {
         this.hackathon = hackathon;
@@ -24,7 +25,12 @@ public class Classifica {
         }
     }
 
+    public void pubblicaClassifica(){
+        this.classificaPubblicata = true;
+    }
+
     public ArrayList<Team> getClassifica() {
+        if(!(this.classificaPubblicata)) throw new RuntimeException("Classifica non pubblicata");
         aggiornaClassifica();
         return new ArrayList<>(teams);
     }
@@ -32,4 +38,6 @@ public class Classifica {
     public void aggiungiTeam(Team team) {
         teams.add(team);
     }
+
+
 }

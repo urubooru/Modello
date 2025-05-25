@@ -44,4 +44,6 @@ public class Team {
     public ArrayList<Documento> getDocumenti() {
         return new ArrayList<>(documenti);
     }
+
+    public ArrayList<Partecipante> getMembri() { return membri; }
 }

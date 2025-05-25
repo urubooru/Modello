@@ -34,7 +34,6 @@ public class Hackathon {
         this.teams = new ArrayList<>();
         this.giudici = new ArrayList<>();
         this.classifica = new Classifica(this);
-        this.classificaPubblicata = false;
     }
 
     public void aggiungiGiudice(Giudice giudice) {
@@ -45,14 +44,28 @@ public class Hackathon {
         this.problema = problema;
     }
 
-    public void pubblicaClassifica(){
-        this.classificaPubblicata = true;
-    }
 
     // Altri getter...
     public String getTitolo() { return titolo; }
     public Classifica getClassifica() {
-        if(!(this.classificaPubblicata)) throw new RuntimeException("Classifica non pubblicata");
         return classifica;
     }
+
+    public ArrayList<Team> getTeams(){
+        return this.teams;
+    }
+
+    public void addTeam(Team t){
+        if(this.teams.contains(t)) throw new RuntimeException("Team already exists");
+        if(t.getMembri().size() > dimMaxTeam) throw new RuntimeException("Il team ha troppi elementi");
+
+        int npart = 0;
+        for(Team t2: this.teams){
+            npart += t2.getMembri().size();
+        }
+        if(npart + t.getMembri().size() > maxIscritti) throw new RuntimeException("Troppi iscritti");
+
+        this.teams.add(t);
+    }
+
 }

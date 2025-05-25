@@ -5,6 +5,8 @@ import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class HUDPartecipante {
     private JComboBox hackathonComboBox;
@@ -29,5 +31,28 @@ public class HUDPartecipante {
 
         this.controller = c;
 
+        hackathonComboBox.addItem("");
+        for(String titolo : c.getTitoloHackathons(c.getHackathons())) {
+            hackathonComboBox.addItem(titolo);
+        }
+
+        userComboBox.addItem("");
+        for(String user : c.getUserNames()) {
+            if(!user.equals(utente.getUsername())) {
+                userComboBox.addItem(user);
+            }
+        }
+
+        creaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    c.creaTeam(teamName.getText(), utente, hackathonComboBox.getSelectedItem());
+                    JOptionPane.showMessageDialog(partecipanteFrame, "Team creato!");
+                } catch(Exception ex) {
+                    JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }
