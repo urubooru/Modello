@@ -24,7 +24,4 @@ public class Utente {
         this.password = password;
     }
     public String getPassword(){ return password; }
-
-    //to be added
-    private void iscrivitiHackathon(){ return;}
 }
