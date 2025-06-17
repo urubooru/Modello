@@ -1,6 +1,6 @@
 package controller;
 
-import Model.*;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -126,7 +126,8 @@ public class HackathonController {
                     }
                 }
                 Team t1 = new Team(teamName, h.getClassifica());
-                Partecipante p2 = new Partecipante(this.currentUser);
+                t1.setHackathon(h);
+                Partecipante p2 = getOrCreatePartecipante(this.currentUser.getUsername());
                 p2.setPartecipazione(h, t1);
                 t1.aggiungiMembro(p2);
                 h.addTeam(t1);
@@ -189,5 +190,64 @@ public class HackathonController {
         Partecipante p = new Partecipante(u);
         partecipanti.add(p);
         return p;
+    }
+
+    public void aggiungiDocumento(Object h, String text){
+        if(h == null){ throw new RuntimeException("Hackathon non valido"); }
+        if(text.isEmpty()){ throw new RuntimeException("Documento non valido"); }
+
+        Team team = null;
+
+        for(Hackathon hackathon : hackathons) {
+            if(hackathon.getTitolo().equals(h)) {
+                Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+                team = p.getTeam(hackathon);
+                break;
+            }
+        }
+
+        if(team == null){
+            throw new RuntimeException("Errore l209");
+        }
+
+        team.addDocumento(text);
+    }
+
+    public ArrayList<Invito> getInviti() {
+        Partecipante currentPartecipante = getOrCreatePartecipante(currentUser.getUsername());
+
+        return currentPartecipante.getInviti();
+    }
+
+    private boolean checkInvito(String hackathonName, String teamName) {
+        Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+        for(Invito i : p.getInviti()) {
+            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("ORGANIZZATORE")){
+                return true;
+            }
+            else if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void rifiutaInvito(Object hackathon, Object team) {
+        String hackathonName = hackathon.toString();
+        String teamName = team.toString();
+        if(!checkInvito(hackathonName, teamName)){ throw new RuntimeException("L'invito non esiste."); }
+
+        //eliminiamo l'invito che sappiamo esistere
+        Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+        p.rifiutaInvito(hackathonName, teamName);
+    }
+
+    public void accettaInvito(Object hackathon, Object team) {
+        String hackathonName = hackathon.toString();
+        String teamName = team.toString();
+        if(!checkInvito(hackathonName, teamName)){ throw new RuntimeException("L'invito non esiste."); }
+
+        Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+    p.accettaInvito(hackathonName, teamName);
     }
 }

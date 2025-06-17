@@ -1,6 +1,7 @@
-package Model;
+package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Team {
     private String nome;
@@ -44,5 +45,31 @@ public class Team {
         return new ArrayList<>(documenti);
     }
 
+    public void addDocumento(String text) {
+        //new Date() gives the current date
+        Documento doc = new Documento(new Date(), text, this);
+        documenti.add(doc);
+    }
+
     public ArrayList<Partecipante> getMembri() { return membri; }
+
+    public void addMembro(Partecipante partecipante) {
+        if(hackathon.getDimMaxTeam() <= this.membri.size()) {
+            throw new RuntimeException("Troppi membri nel team!");
+        }
+
+        int sum = 0;
+        for(Team t : hackathon.getTeams()){
+            sum += t.getMembri().size();
+        }
+        if(hackathon.getMaxIscritti() <= sum) {
+            throw new RuntimeException("Troppi partecipanti all'hackathon!");
+        }
+
+        this.membri.add(partecipante);
+    }
+
+    public void setHackathon(Hackathon h) {
+        this.hackathon = h;
+    }
 }

@@ -16,6 +16,7 @@ public class HUDPartecipante {
     private JTextField teamName;
     private JButton creaButton;
     public JPanel partecipantePanel;
+    private JButton vediDoc;
 
     private HackathonController controller;
 
@@ -65,6 +66,25 @@ public class HUDPartecipante {
                 }
             }
         });
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    c.aggiungiDocumento(hackathonComboBox.getSelectedItem(), descrizioneDocumento.getText());
+                    JOptionPane.showMessageDialog(partecipanteFrame, "Documento creato!");
+                } catch (Exception ex){
+                    JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+//        vediDoc.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//            }
+//        });
 
 //        refreshButton.addActionListener(new ActionListener() {
 //            @Override

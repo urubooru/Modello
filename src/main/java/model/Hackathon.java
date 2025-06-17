@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,6 +66,13 @@ public class Hackathon {
         if(npart + t.getMembri().size() > maxIscritti) throw new RuntimeException("Troppi iscritti");
 
         this.teams.add(t);
+    }
+
+    public int getMaxIscritti() {
+        return maxIscritti;
+    }
+    public int getDimMaxTeam() {
+        return dimMaxTeam;
     }
 
 }

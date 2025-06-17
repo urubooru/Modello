@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 public class Organizzatore extends Utente{
     //non aggiungiamo altri attributi, non dovrebbe servire
