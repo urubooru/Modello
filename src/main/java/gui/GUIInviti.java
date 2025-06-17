@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -16,7 +15,7 @@ public class GUIInviti {
 
     private HackathonController controller;
 
-    public GUIInviti(HackathonController c, Utente utente) {
+    public GUIInviti(HackathonController c) {
         controller = c;
 
         JFrame invitiFrame = new JFrame("GUI inviti");
@@ -24,5 +23,6 @@ public class GUIInviti {
         invitiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         invitiFrame.pack();
         invitiFrame.setLocationRelativeTo(null);
-        invitiFrame.setVisible(true);    }
+        invitiFrame.setVisible(true);
+    }
 }

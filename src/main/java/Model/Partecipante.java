@@ -1,37 +1,48 @@
 package Model;
 
+import java.util.ArrayList;
+
 public class Partecipante extends Utente{
-    private String invitoTeam;
-    private Team team;
-    private boolean hasTeam;
+    private ArrayList<Invito> invitoTeam;
+    private ArrayList<Invito> invitiAccettati;
 
     public Partecipante(Utente user) {
         super(user.email, user.username, user.password);
-        this.team = null;
-        this.invitoTeam = null;
-        this.hasTeam = false;
+        invitoTeam = new ArrayList<>();
+        invitiAccettati = new ArrayList<>();
     }
 
-    public Team getTeam(){ return this.team; }
-    void setTeam(Team team){ this.team = team; }
-
-    private void setInvitoTeam(String invito){ this.invitoTeam = invito; }
-
-    private int invitaTeam(Partecipante partecipante, String invito){
-        if(partecipante.hasTeam == false) return -1;
-        partecipante.setTeam(this.team);
-        partecipante.setInvitoTeam(invito);
-        return 0;
+    public Team getTeam(Hackathon h){
+        for(Invito i : invitiAccettati){
+            if(i.getHackathon().getTitolo().equals(h.getTitolo())){
+                return i.getTeam();
+            }
+        }
+        return null;
     }
 
-    private void rispondiInvito(boolean risposta){
-        if(risposta == false){
-            this.setTeam(null);
+    public void setPartecipazione(Hackathon h, Team t){
+        Invito i = new Invito(this, h, t);
+        invitoTeam.add(i);
+        invitiAccettati.add(i);
+    }
+
+    public void addInvito(Hackathon hackathon, Team team) {
+        for(Invito i: invitoTeam){
+            if(i.getHackathon().getTitolo().equals(hackathon.getTitolo()) && i.getTeam().getNome().equals(team.getNome())){
+                throw new RuntimeException("L'invito è già presente!");
+            }
         }
-        else{
-            this.hasTeam = true;
-            //do something (change team and add to a list)
+        Invito invito = new Invito(this, hackathon, team);
+        invitoTeam.add(invito);
+    }
+
+    public void accettaInvito(Hackathon hackathon, Team team) {
+        for(Invito invito : invitoTeam) {
+            if(hackathon.getTitolo().equals(invito.getHackathon().getTitolo()) && team.getNome().equals(invito.getTeam().getNome())) {
+                invitiAccettati.add(invito);
+                break;
+            }
         }
-        this.setInvitoTeam(null);
     }
 }

@@ -1,7 +1,5 @@
 package gui;
 
-import Model.Hackathon;
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -10,7 +8,7 @@ import java.awt.event.ActionListener;
 
 public class HUDPartecipante {
     private JComboBox hackathonComboBox;
-    private JButton refreshButton;
+//    private JButton refreshButton;
     private JComboBox userComboBox;
     private JButton inviteButton;
     private JTextArea descrizioneDocumento;
@@ -21,7 +19,7 @@ public class HUDPartecipante {
 
     private HackathonController controller;
 
-    public HUDPartecipante(HackathonController c, Utente utente) {
+    public HUDPartecipante(HackathonController c) {
         JFrame partecipanteFrame = new JFrame("GUI partecipante");
         partecipanteFrame.setContentPane(partecipantePanel);
         partecipanteFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -36,9 +34,10 @@ public class HUDPartecipante {
             hackathonComboBox.addItem(titolo);
         }
 
+        userComboBox.removeAllItems();
         userComboBox.addItem("");
         for(String user : c.getUserNames()) {
-            if(!user.equals(utente.getUsername())) {
+            if(!user.equals(c.getUsername())) {
                 userComboBox.addItem(user);
             }
         }
@@ -47,12 +46,31 @@ public class HUDPartecipante {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    c.creaTeam(teamName.getText(), utente, hackathonComboBox.getSelectedItem());
+                    c.creaTeam(teamName.getText(), hackathonComboBox.getSelectedItem());
                     JOptionPane.showMessageDialog(partecipanteFrame, "Team creato!");
                 } catch(Exception ex) {
                     JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
+        inviteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    c.invita(hackathonComboBox.getSelectedItem(),userComboBox.getSelectedItem());
+                    JOptionPane.showMessageDialog(partecipanteFrame, "Ho invitato l'utente " + userComboBox.getSelectedItem().toString() + " nel tuo team!");
+                } catch (Exception ex){
+                    JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+//        refreshButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                populateComboBox(c);
+//            }
+//        });
     }
 }

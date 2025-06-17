@@ -38,7 +38,6 @@ public class Team {
 
     public void aggiungiMembro(Partecipante partecipante) {
         membri.add(partecipante);
-        partecipante.setTeam(this);
     }
 
     public ArrayList<Documento> getDocumenti() {

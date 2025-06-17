@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -21,7 +20,7 @@ public class HUDGiudice {
 
     private HackathonController controller;
 
-    public HUDGiudice(HackathonController c, Utente utente) {
+    public HUDGiudice(HackathonController c) {
         controller = c;
 
         JFrame giudiceFrame = new JFrame("GUI Organizzatore");
@@ -34,8 +33,8 @@ public class HUDGiudice {
         visualizzaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                documentiTeam docGui = new documentiTeam(c, utente, teams.getSelectedItem());
-                docGui.documentiPanel.setVisible(true);
+                //documentiTeam docGui = new documentiTeam(c, utente, teams.getSelectedItem());
+                //docGui.documentiPanel.setVisible(true);
             }
         });
     }

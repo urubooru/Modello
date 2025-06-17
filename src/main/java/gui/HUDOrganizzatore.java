@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -18,7 +17,7 @@ public class HUDOrganizzatore {
 
     HackathonController controller;
 
-    public HUDOrganizzatore(HackathonController c, Utente utente) {
+    public HUDOrganizzatore(HackathonController c) {
         controller = c;
 
         JFrame organizzatoreFrame = new JFrame("GUI Organizzatore");

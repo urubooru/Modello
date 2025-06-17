@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -32,8 +31,8 @@ public class LoginForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Utente user = c.login(userTextField.getText(), passwordField.getText());
-                    UserInterface userInt = new UserInterface(c, frame, user);
+                    c.login(userTextField.getText(), passwordField.getText());
+                    UserInterface userInt = new UserInterface(c, frame);
                     userInt.userInterface.setVisible(true);
                     frame.setVisible(false);
                 } catch (RuntimeException e1) {

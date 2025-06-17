@@ -2,19 +2,21 @@ package controller;
 
 import Model.*;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class HackathonController {
     private ArrayList<Utente> utenti;
+    private ArrayList<Partecipante> partecipanti;
     private ArrayList<Hackathon> hackathons;
     private ArrayList<Team> teams;
+    private Utente currentUser;
 
     public HackathonController() {
         this.utenti = new ArrayList<Utente>();
         this.hackathons = new ArrayList<Hackathon>();
         this.teams = new ArrayList<Team>();
+        this.partecipanti = new ArrayList<Partecipante>();
 
         //TEST
         Utente u = new Utente("1","1","1");
@@ -72,6 +74,11 @@ public class HackathonController {
         return ret;
     }
 
+    public void creaAggiungiUtente(String email, String user, String pass) {
+        Utente u = new Utente(email, user, pass);
+        this.addUtente(u);
+    }
+
     public void addUtente(Utente utente) {
         for(Utente u: utenti) {
             if(u.getUsername().equals(utente.getUsername())) {
@@ -82,19 +89,28 @@ public class HackathonController {
         this.utenti.add(utente);
     }
 
-    public Utente login(String username, String password) {
+    public void login(String username, String password) {
         if(username.isEmpty() || password.isEmpty()) { throw new RuntimeException("Username or password are empty"); }
 
         for(Utente u: utenti) {
             if(u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u;
+                this.currentUser = u;
+                return;
             }
         }
 
         throw new RuntimeException("Credenziali non valide");
     }
 
-    public boolean creaTeam(String teamName, Utente creator, Object hackathon) {
+    public String getUsername() {
+        return this.currentUser.getUsername();
+    }
+
+    public void setPassword(String password) {
+        this.currentUser.setPassword(password);
+    }
+
+    public void creaTeam(String teamName, Object hackathon) {
         if(teamName.isEmpty() || hackathon.toString().isEmpty()) { throw new RuntimeException("Empty team name or hackathon"); }
 
         for(Hackathon h : hackathons) {
@@ -105,17 +121,73 @@ public class HackathonController {
                         throw new RuntimeException("Team already exists");
                     }
                     for(Partecipante p : t.getMembri()){
-                        if(p.getUsername().equals(creator.getUsername()))
-                            throw new RuntimeException("Fai già parte di un team");
+                        if(p.getUsername().equals(this.currentUser.getUsername()))
+                            throw new RuntimeException("Fai già parte di un team : " + p.getTeam(h).getNome());
                     }
                 }
                 Team t1 = new Team(teamName, h.getClassifica());
-                t1.aggiungiMembro(new Partecipante(creator));
+                Partecipante p2 = new Partecipante(this.currentUser);
+                p2.setPartecipazione(h, t1);
+                t1.aggiungiMembro(p2);
                 h.addTeam(t1);
+                this.partecipanti.add(p2);
                 this.teams.add(t1);
-                return true;
+                return;
             }
         }
         throw new RuntimeException("Failed");
+    }
+
+    public Utente getUtenteFromUsername(String username) {
+        for(Utente u : utenti) {
+            if(u.getUsername().equals(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    public void invita(Object hackathon, Object username) {
+        String invitatoUsername = username.toString();
+        if(invitatoUsername.isEmpty()) { throw new RuntimeException("Invitato non valido"); }
+        if(hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+
+        Partecipante invitato = getOrCreatePartecipante(invitatoUsername);
+        Hackathon hack = null;
+        //retrieve right hackathon
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                hack = h;
+                break;
+            }
+        }
+
+        //We know that the hackathon is not going to be null if its not empty
+        assert hack != null;
+        for(Team t: hack.getTeams()){
+            if(t.getMembri().contains(invitato)) {
+                throw new RuntimeException("L'invitato ha già un team!");
+            }
+        }
+
+        //The user is not participating in any way in the current hackathon
+        Partecipante currentUserPartecipante = getOrCreatePartecipante(currentUser.getUsername());
+        if(currentUserPartecipante.getTeam(hack) == null){
+            throw new RuntimeException("L'utente invitante non ha un team.");
+        }
+        invitato.addInvito(hack, currentUserPartecipante.getTeam(hack));
+
+    }
+
+    private Partecipante getOrCreatePartecipante(String invitatoUsername) {
+        Utente u = getUtenteFromUsername(invitatoUsername);
+        for(Partecipante p : partecipanti) {
+            if(p.getUsername().equals(u.getUsername())) {
+                return p;
+            }
+        }
+        Partecipante p = new Partecipante(u);
+        partecipanti.add(p);
+        return p;
     }
 }

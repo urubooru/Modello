@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -26,7 +25,7 @@ public class UserInterface {
 
     private HackathonController controller;
 
-    public UserInterface(HackathonController c, JFrame callframe, Utente utente) {
+    public UserInterface(HackathonController c, JFrame callframe) {
         JFrame userFrame = new JFrame("UserInterface");
         userFrame.setContentPane(userInterface);
         userFrame.pack();
@@ -53,7 +52,7 @@ public class UserInterface {
             @Override
             public void actionPerformed(ActionEvent event){
                 try {
-                    utente.setPassword(newpassTxtF.getText());
+                    c.setPassword(newpassTxtF.getText());
                     JOptionPane.showMessageDialog(userInterface, "Password cambiata");
                 } catch(RuntimeException e){
                     JOptionPane.showMessageDialog(userInterface, "Error: " + e.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
@@ -89,7 +88,7 @@ public class UserInterface {
         partecipanteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                HUDPartecipante hudPartecipante = new HUDPartecipante(c, utente);
+                HUDPartecipante hudPartecipante = new HUDPartecipante(c);
                 hudPartecipante.partecipantePanel.setVisible(true);
             }
         });
@@ -97,7 +96,7 @@ public class UserInterface {
         organizzatoreButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                HUDOrganizzatore hudOrganizzatore = new HUDOrganizzatore(c, utente);
+                HUDOrganizzatore hudOrganizzatore = new HUDOrganizzatore(c);
                 hudOrganizzatore.organizzatorePanel.setVisible(true);
             }
         });
@@ -105,7 +104,7 @@ public class UserInterface {
         giudiceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                HUDGiudice hudGiudice = new HUDGiudice(c, utente);
+                HUDGiudice hudGiudice = new HUDGiudice(c);
                 hudGiudice.giudicePanel.setVisible(true);
                 hudGiudice.hackathonPanel.setVisible(true);
             }
@@ -114,7 +113,7 @@ public class UserInterface {
         inviteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                GUIInviti invite = new GUIInviti(controller, utente);
+                GUIInviti invite = new GUIInviti(controller);
                 invite.GUIinviti.setVisible(true);
                 invite.guiPanel.setVisible(true);
             }

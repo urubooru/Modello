@@ -1,6 +1,5 @@
 package gui;
 
-import Model.Utente;
 import controller.HackathonController;
 
 import javax.swing.*;
@@ -32,8 +31,7 @@ public class RegisterForm {
             public void actionPerformed(ActionEvent e) {
                 String email = emailTxt.getText(); String user = registerUserTxt.getText(); String pass = registerPassTxt.getText();
                 try {
-                    Utente u = new Utente(email, user, pass);
-                    controller.addUtente(u);
+                    controller.creaAggiungiUtente(email, user, pass);
                     JOptionPane.showMessageDialog(registerForm, "Utente registrato");
                 } catch (RuntimeException e1) {
                     JOptionPane.showMessageDialog(registerForm, "Error: " + e1.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
