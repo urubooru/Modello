@@ -50,28 +50,23 @@ public class Partecipante extends Utente{
     }
 
     public void accettaInvito(String hackathonName, String teamName) {
+
         for(Invito i : invitoTeam){
-            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("ORGANIZZATORE")){
-                invitiAccettati.add(i);
-                invitoTeam.remove(i);
-                break;
-            }
-            else if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
+            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
                 i.getTeam().addMembro(this);
                 invitiAccettati.add(i);
                 invitoTeam.remove(i);
                 break;
+            }
+            else if(i.getHackathon().getTitolo().equals(hackathonName)){
+                invitoTeam.remove(i);
             }
         }
     }
 
     public void rifiutaInvito(String hackathonName, String teamName) {
          for(Invito i : invitoTeam){
-            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("ORGANIZZATORE")){
-                invitoTeam.remove(i);
-                break;
-            }
-            else if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
+            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
                 invitoTeam.remove(i);
                 break;
             }

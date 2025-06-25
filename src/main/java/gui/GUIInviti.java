@@ -30,7 +30,7 @@ public class GUIInviti {
         TableInviti modello = new TableInviti();
         inviteTable.setModel(modello);
 
-        modello.setData(c.getInviti());
+        modello.setData(controller.getInviti());
 
         int i = 0;
         this.hackathon.addItem("");
@@ -46,8 +46,9 @@ public class GUIInviti {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    c.accettaInvito(hackathon.getSelectedItem(), team.getSelectedItem());
-                    modello.setData(c.getInviti());
+                    controller.accettaInvito(hackathon.getSelectedItem(), team.getSelectedItem());
+                    modello.clear();
+                    modello.setData(controller.getInviti());
                     modello.fireTableDataChanged();
                     JOptionPane.showMessageDialog(invitiFrame, "Invito accettato!");
                 } catch (Exception ex) {
@@ -60,8 +61,9 @@ public class GUIInviti {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    c.rifiutaInvito(hackathon.getSelectedItem(), team.getSelectedItem());
-                    modello.setData(c.getInviti());
+                    controller.rifiutaInvito(hackathon.getSelectedItem(), team.getSelectedItem());
+                    modello.clear();
+                    modello.setData(controller.getInviti());
                     modello.fireTableDataChanged();
                     JOptionPane.showMessageDialog(invitiFrame, "Invito rifiutato!");
                 } catch(Exception ex) {

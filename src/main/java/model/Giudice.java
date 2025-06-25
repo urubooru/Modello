@@ -64,11 +64,7 @@ public class Giudice extends Utente{
 
     public void rifiutaInvito(String hackathonName, String teamName) {
         for(Invito i : inviti){
-            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("ORGANIZZATORE")){
-                inviti.remove(i);
-                break;
-            }
-            else if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
+            if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("GIUDICE")){
                 inviti.remove(i);
                 break;
             }
@@ -76,8 +72,13 @@ public class Giudice extends Utente{
     }
 
     public void accettaInvito(String hackathonName, String teamName) {
+        boolean cleanFlag = false;
         for(Invito i : inviti){
-            if(i.getHackathon().getTitolo().equals(hackathonName)){
+            if(i.getHackathon().getTitolo().equals(hackathonName) && cleanFlag && teamName.equals("GIUDICE")){
+                inviti.remove(i);
+            }
+            else if(i.getHackathon().getTitolo().equals(hackathonName) && teamName.equals("GIUDICE")){
+                cleanFlag = true;
                 invitiAccettati.add(i);
                 inviti.remove(i);
                 break;

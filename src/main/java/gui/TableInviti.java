@@ -46,4 +46,7 @@ public class TableInviti extends AbstractTableModel {
         return null;
     }
 
+    public void clear() {
+        hackathonDiInviti = null;
+    }
 }
