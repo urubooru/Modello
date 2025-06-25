@@ -39,7 +39,7 @@ public class TableInviti extends AbstractTableModel {
                     return i.getTeam().getNome();
                 }
                 else {
-                    return "ORGANIZZATORE";
+                    return "GIUDICE";
                 }
         }
 

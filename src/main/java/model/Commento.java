@@ -12,7 +12,7 @@ public class Commento {
         this.testo = testo;
         this.giudice = giudice;
         this.documento = documento;
-        this.data = new Date();
+        this.data = new Date(System.currentTimeMillis());
         documento.aggiungiCommento(this);
     }
 

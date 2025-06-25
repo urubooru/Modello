@@ -31,11 +31,20 @@ public class Partecipante extends Utente{
     }
 
     public void addInvito(Hackathon hackathon, Team team) {
-        for(Invito i: invitoTeam){
-            if(i.getHackathon().getTitolo().equals(hackathon.getTitolo()) && i.getTeam().getNome().equals(team.getNome())){
-                throw new RuntimeException("L'invito è già presente!");
+        if(team!=null) {
+            for (Invito i : invitoTeam) {
+                if (i.getHackathon().getTitolo().equals(hackathon.getTitolo()) && i.getTeam().getNome().equals(team.getNome())) {
+                    throw new RuntimeException("L'invito è già presente!");
+                }
+            }
+        } else{
+            for(Invito i : invitoTeam){
+                if(i.getHackathon().getTitolo().equals(hackathon.getTitolo()) && i.getTeam() == null){
+                    throw new RuntimeException("L'invito è già presente!");
+                }
             }
         }
+
         Invito invito = new Invito(this, hackathon, team);
         invitoTeam.add(invito);
     }

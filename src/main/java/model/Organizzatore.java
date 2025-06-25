@@ -7,7 +7,8 @@ public class Organizzatore extends Utente{
         super(user.email, user.username, user.password);
     }
 
-    //to be implemented
+    //IMPLEMENTED IN CONTROLLER DIRECTLY WITHOUT ACTUALLY USING THESE
+   /* //to be implemented
     private void pubblicaClassifica(){
         //dai output di team, e voti (con posizioni)
         return;
@@ -23,5 +24,5 @@ public class Organizzatore extends Utente{
     private void apriRegistrazioni(){
 
         return;
-    }
+    }*/
 }

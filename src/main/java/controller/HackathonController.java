@@ -2,12 +2,15 @@ package controller;
 
 import model.*;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class HackathonController {
+
     private ArrayList<Utente> utenti;
     private ArrayList<Partecipante> partecipanti;
+    private ArrayList<Giudice> giudici;
     private ArrayList<Hackathon> hackathons;
     private ArrayList<Team> teams;
     private Utente currentUser;
@@ -17,6 +20,7 @@ public class HackathonController {
         this.hackathons = new ArrayList<Hackathon>();
         this.teams = new ArrayList<Team>();
         this.partecipanti = new ArrayList<Partecipante>();
+        this.giudici = new ArrayList<Giudice>();
 
         //TEST
         Utente u = new Utente("1","1","1");
@@ -24,10 +28,12 @@ public class HackathonController {
         Utente u2 = new Utente("2","2","2");
         this.utenti.add(u2);
         Organizzatore Org1 = new Organizzatore(u);
-        Date startDate = new Date(2024,12,20);
-        Date endDate = new Date(2024,12,30);
-        Date inizioIscrizioni = new Date(2024,12,21);
-        Date fineIscrizioni = new Date(2024,12,28);
+        Date startDate = new Date(2024-1900,12-1,20);
+        //NOTA : Date gestisce una data partendo dal 1900 quindi se si vuole inserire il
+        //2026 dobbiamo togliere 1900 anni dagli anni + i mesi partono da 0
+        Date endDate = new Date(2026-1900,12-1,30);
+        Date inizioIscrizioni = new Date(2024-1900,12-1,21);
+        Date fineIscrizioni = new Date(2026-1900,12-1,28);
         this.hackathons.add(new Hackathon("Prova1","Napoli", startDate, endDate, inizioIscrizioni, fineIscrizioni,20,5, Org1));
     }
 
@@ -155,11 +161,18 @@ public class HackathonController {
 
         Partecipante invitato = getOrCreatePartecipante(invitatoUsername);
         Hackathon hack = null;
-        //retrieve right hackathon
+        //Retrieve right hackathon
         for(Hackathon h : hackathons) {
             if(h.getTitolo().equals(hackathon.toString())) {
                 hack = h;
                 break;
+            }
+        }
+
+        //Check if he is a judge
+        for(Giudice g : hack.getGiudici()){
+            if(g.getUsername().equals(invitatoUsername)) {
+                throw new RuntimeException("L'utente è un giudice!");
             }
         }
 
@@ -215,39 +228,160 @@ public class HackathonController {
 
     public ArrayList<Invito> getInviti() {
         Partecipante currentPartecipante = getOrCreatePartecipante(currentUser.getUsername());
+        ArrayList<Invito> one = currentPartecipante.getInviti();
+        Giudice currentGiudice = getOrCreateGiudice(currentUser.getUsername());
+        ArrayList<Invito> two = currentGiudice.getInviti();
+        two.addAll(one);
 
-        return currentPartecipante.getInviti();
+        return two;
     }
 
-    private boolean checkInvito(String hackathonName, String teamName) {
+    //1 : from partecipante ; 2 : from giudice
+    private int checkInvito(String hackathonName, String teamName) {
         Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
         for(Invito i : p.getInviti()) {
             if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam()==null && teamName.equals("ORGANIZZATORE")){
-                return true;
+                return 1;
             }
             else if(i.getHackathon().getTitolo().equals(hackathonName) && i.getTeam().getNome().equals(teamName)) {
-                return true;
+                return 1;
             }
         }
-        return false;
+
+        Giudice g = getOrCreateGiudice(currentUser.getUsername());
+        for(Invito i : g.getInviti()) {
+            if(i.getHackathon().getTitolo().equals(hackathonName)){
+                return 2;
+            }
+        }
+
+        return 0;
     }
 
     public void rifiutaInvito(Object hackathon, Object team) {
         String hackathonName = hackathon.toString();
         String teamName = team.toString();
-        if(!checkInvito(hackathonName, teamName)){ throw new RuntimeException("L'invito non esiste."); }
 
-        //eliminiamo l'invito che sappiamo esistere
-        Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
-        p.rifiutaInvito(hackathonName, teamName);
+        int checkInvito = checkInvito(hackathonName, teamName);
+        if(checkInvito == 0){ throw new RuntimeException("L'invito non esiste."); }
+
+        if(checkInvito == 1) {
+            Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+            p.rifiutaInvito(hackathonName, teamName);
+            return;
+        }
+
+        if(checkInvito == 2) {
+            Giudice g = getOrCreateGiudice(currentUser.getUsername());
+            g.rifiutaInvito(hackathonName, teamName);
+        }
     }
 
     public void accettaInvito(Object hackathon, Object team) {
         String hackathonName = hackathon.toString();
         String teamName = team.toString();
-        if(!checkInvito(hackathonName, teamName)){ throw new RuntimeException("L'invito non esiste."); }
 
-        Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
-    p.accettaInvito(hackathonName, teamName);
+        int checkInvito = checkInvito(hackathonName, teamName);
+
+        if(checkInvito == 0){ throw new RuntimeException("L'invito non esiste."); }
+
+        if(checkInvito == 1) {
+            Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
+            p.accettaInvito(hackathonName, teamName);
+            return;
+        }
+
+        if(checkInvito == 2) {
+            Giudice g = getOrCreateGiudice(currentUser.getUsername());
+            g.accettaInvito(hackathonName, teamName);
+            //ADD GIUDICE TO HACKATHON
+            for(Hackathon h : hackathons) {
+                if(h.getTitolo().equals(hackathonName)) {
+                    h.aggiungiGiudice(g);
+                }
+            }
+        }
+    }
+
+    public void populateHackathonBox(JComboBox hackComboBox) {
+        for(Hackathon h : hackathons) {
+            if(h.getOrganizzatore().getUsername().equals(currentUser.getUsername())) {
+                hackComboBox.addItem(h.getTitolo());
+            }
+        }
+    }
+
+    public void publishRankings(Object obj) {
+        if (obj == null){ throw new RuntimeException("Hackathon non valido"); }
+
+        String hackName = obj.toString();
+
+        if(hackName == null || hackName.isEmpty()){ throw new RuntimeException("Hackathon non valido"); }
+
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackName)) {
+                h.pubblicaClassifica();
+                return;
+            }
+        }
+    }
+
+    public void openRegistration(Object obj) {
+        if (obj == null){ throw new RuntimeException("Hackathon non valido"); }
+
+        String hackName = obj.toString();
+
+        if(hackName == null || hackName.isEmpty()){ throw new RuntimeException("Hackathon non valido"); }
+
+        for(Hackathon h : hackathons){
+            if(h.getTitolo().equals(hackName)){
+                h.apriRegistrazioni();
+            }
+        }
+    }
+
+    public void invitaGiudice(Object hackathon, Object username) {
+        String invitatoUsername = username.toString();
+        if(invitatoUsername.isEmpty()) { throw new RuntimeException("Invitato non valido"); }
+        if(hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+
+        Giudice invitato = getOrCreateGiudice(invitatoUsername);
+        Hackathon hack = null;
+        //Retrieve right hackathon
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                hack = h;
+                break;
+            }
+        }
+
+        //We know that the hackathon is not going to be null if it's not empty
+        assert hack != null;
+        for(Team t: hack.getTeams()){
+            if(t.getMembri().contains(invitato)) {
+                throw new RuntimeException("L'invitato partecipa all'hackathon!");
+            }
+        }
+
+        //Is the user a judge already?
+        for(Giudice g : hack.getGiudici()){
+            if(g.getUsername().equals(invitatoUsername)) {
+                throw new RuntimeException("L'invitato è già un giudice!");
+            }
+        }
+
+        invitato.addInvito(hack, null);
+    }
+
+    private Giudice getOrCreateGiudice(String invitatoUsername) {
+        Utente u = getUtenteFromUsername(invitatoUsername);
+        for(Giudice g : giudici) {
+            if(g.getUsername().equals(u.getUsername())) {
+                return g;
+            }
+        }
+        Giudice g = new Giudice(u);
+        giudici.add(g);
+        return g;
     }
 }

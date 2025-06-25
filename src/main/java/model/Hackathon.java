@@ -18,6 +18,7 @@ public class Hackathon {
     private Organizzatore organizzatore;
     private Classifica classifica;
     private boolean classificaPubblicata;
+    public boolean apriRegistrazioni;
 
     public Hackathon(String titolo, String sede, Date dataInizio, Date dataFine,
                      Date inizioIscrizioni, Date fineIscrizioni, int maxIscritti,
@@ -44,12 +45,16 @@ public class Hackathon {
         this.problema = problema;
     }
 
-
     // Altri getter...
     public String getTitolo() { return titolo; }
     public Classifica getClassifica() {
         return classifica;
     }
+
+    public String getProblema() {
+        return problema;
+    }
+
 
     public ArrayList<Team> getTeams(){
         return this.teams;
@@ -75,4 +80,25 @@ public class Hackathon {
         return dimMaxTeam;
     }
 
+    public Organizzatore getOrganizzatore() {
+        return organizzatore;
+    }
+
+    public void pubblicaClassifica() {
+        if(classificaPubblicata) throw new RuntimeException("Classifica già pubblicata!");
+
+        classificaPubblicata = true;
+    }
+
+    public void apriRegistrazioni() {
+        Date data = new Date(System.currentTimeMillis());
+        if(data.before(inizioIscrizioni) || data.after(fineIscrizioni)) {throw new RuntimeException("Impossibile aprire le registrazioni (troppo presto/tardi)!");}
+        if(apriRegistrazioni) { throw new RuntimeException("Registrazioni già aperte!"); }
+
+        this.apriRegistrazioni = true;
+    }
+
+    public ArrayList<Giudice> getGiudici() {
+        return giudici;
+    }
 }

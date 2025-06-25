@@ -46,8 +46,7 @@ public class Team {
     }
 
     public void addDocumento(String text) {
-        //new Date() gives the current date
-        Documento doc = new Documento(new Date(), text, this);
+        Documento doc = new Documento(new Date(System.currentTimeMillis()), text, this);
         documenti.add(doc);
     }
 

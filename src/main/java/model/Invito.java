@@ -2,10 +2,10 @@ package model;
 
 public class Invito {
     Hackathon hackathon;
-    Team team; //IF TEAM == NULL -> ORGANIZZATORE
-    Partecipante invitato;
+    Team team; //IF TEAM == NULL -> GIUDICE
+    Utente invitato;
 
-    public Invito(Partecipante invitato, Hackathon hackathon, Team team) {
+    public Invito(Utente invitato, Hackathon hackathon, Team team) {
         this.invitato = invitato;
         this.hackathon = hackathon;
         this.team = team;
@@ -17,7 +17,7 @@ public class Invito {
     public Team getTeam() {
         return team;
     }
-    public Partecipante getInvitato() {
+    public Utente getInvitato() {
         return invitato;
     }
 }
