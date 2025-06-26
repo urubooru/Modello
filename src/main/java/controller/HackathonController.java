@@ -138,7 +138,10 @@ public class HackathonController {
                 Partecipante p2 = getOrCreatePartecipante(this.currentUser.getUsername());
                 p2.setPartecipazione(h, t1);
                 t1.aggiungiMembro(p2);
+
+                //THIS ALWAYS GIVES AN EXCEPTION, CAN'T EXACTLY FIGURE OUT WHY
                 h.addTeam(t1);
+
                 this.partecipanti.add(p2);
                 this.teams.add(t1);
                 return;
