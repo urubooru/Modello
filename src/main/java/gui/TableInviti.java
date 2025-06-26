@@ -7,8 +7,8 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 public class TableInviti extends AbstractTableModel {
-
     private ArrayList<Invito> hackathonDiInviti;
+
     public void setData(ArrayList<Invito> hackathonDiInviti) {
         this.hackathonDiInviti = hackathonDiInviti;
     }

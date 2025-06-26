@@ -1,6 +1,7 @@
 package gui;
 
 import controller.HackathonController;
+import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -64,21 +65,29 @@ public class UserInterface {
             @Override
             public void actionPerformed(ActionEvent event){
                 try{
+                    for(Hackathon h : c.getHackathons()) {
+                        if(h.getTitolo().equals(hackathons.getSelectedItem().toString())) {
+                            if(!h.isClassificaPubblicata()){
+                                throw new RuntimeException("Classifica non pubblicata");
+                            }
+                        }
+                    }
+
                     ArrayList<String> listOfTeams = c.getTeamClassifica(c.getClassifica(hackathons.getSelectedItem().toString()));
                     ArrayList<Integer> voti = c.getVotiClassifica(c.getClassifica(hackathons.getSelectedItem().toString()));
 
-                    System.out.println("Prova");
                     TableClassificaModel tableModel = new TableClassificaModel();
                     hackathonTable.setModel(tableModel);
+                    System.out.println(listOfTeams.size());
                     if(!listOfTeams.isEmpty()){
                         tableModel.setTeamNames(listOfTeams);
                         tableModel.setVotes(voti);
-                        tableModel.fireTableDataChanged();
                     } else{
                         tableModel.setTeamNames(new ArrayList<>());
                         tableModel.setVotes(new ArrayList<>());
-                        tableModel.fireTableDataChanged();
                     }
+
+                    tableModel.fireTableDataChanged();
                 } catch(RuntimeException e){
                     JOptionPane.showMessageDialog(userInterface, "Error: " + e.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
                 }

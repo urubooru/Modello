@@ -17,6 +17,7 @@ public class HUDPartecipante {
     private JButton creaButton;
     public JPanel partecipantePanel;
     private JButton vediDoc;
+    private JButton visualizzaProblema;
 
     private HackathonController controller;
 
@@ -78,6 +79,20 @@ public class HUDPartecipante {
                 }
             }
         });
+
+        visualizzaProblema.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    Problema problema = new Problema(c, c.getProblema(hackathonComboBox.getSelectedItem()));
+                    problema.problemaPanel.setVisible(true);
+                } catch(Exception ex){
+                    JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+
 
 //        vediDoc.addActionListener(new ActionListener() {
 //            @Override

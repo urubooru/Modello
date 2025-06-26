@@ -116,6 +116,8 @@ public class HackathonController {
         this.currentUser.setPassword(password);
     }
 
+    //PROBLEMA : NON CAPISCO PERCHÉ MA FA SEMPRE IL THROW RUNTIMEEXCEPTION
+    //anche se non è stato cambiato nulla dall'ultimo commit
     public void creaTeam(String teamName, Object hackathon) {
         if(teamName.isEmpty() || hackathon.toString().isEmpty()) { throw new RuntimeException("Empty team name or hackathon"); }
 
@@ -329,7 +331,7 @@ public class HackathonController {
         }
     }
 
-    public void populateHackathonBox(JComboBox hackComboBox) {
+    public void populateHackathonBoxOrganizzatore(JComboBox hackComboBox) {
         for(Hackathon h : hackathons) {
             if(h.getOrganizzatore().getUsername().equals(currentUser.getUsername())) {
                 hackComboBox.addItem(h.getTitolo());
@@ -409,5 +411,78 @@ public class HackathonController {
         Giudice g = new Giudice(u);
         giudici.add(g);
         return g;
+    }
+
+    public void populateHackathonBoxGiudice(JComboBox hackComboBox) {
+        for(Hackathon h : hackathons) {
+            for(Giudice g : h.getGiudici()) {
+                if(g.getUsername().equals(currentUser.getUsername())) {
+                    hackComboBox.addItem(h.getTitolo());
+                    break;
+                }
+            }
+        }
+    }
+
+    public String getProblema(Object hackathon) {
+        if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                return h.getProblema();
+            }
+        }
+
+        return "";
+    }
+
+    public void setProblema(Object hackathon, String problema) {
+        if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+
+        for(Hackathon h: hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                h.setProblema(problema);
+            }
+        }
+    }
+
+    public void populateTeamComboBox(Object hackathon, JComboBox teamComboBox) {
+        teamComboBox.removeAllItems();
+        if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                for(Team t : h.getTeams()) {
+                    teamComboBox.addItem(t.getNome());
+                }
+                break;
+            }
+        }
+    }
+
+    public void votaTeam(Object hackathon, Object team, String vote) {
+        if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
+        if(team== null || team.toString().isEmpty()) { throw new RuntimeException("Team non valido"); }
+
+        int voto = 0;
+        try{
+            voto = Integer.parseInt(vote);
+        } catch(NumberFormatException ex){
+            throw new RuntimeException("Il voto inserito non è parsabile come int!");
+        }
+
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathon.toString())) {
+                for(Team t : h.getTeams()) {
+                    if(t.getNome().equals(team.toString())) {
+                        Giudice g = getOrCreateGiudice(currentUser.getUsername());
+                        Voto v = new Voto(t, g, voto);
+                        t.addVoto(v);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
     }
 }

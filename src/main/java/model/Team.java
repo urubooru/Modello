@@ -71,4 +71,15 @@ public class Team {
     public void setHackathon(Hackathon h) {
         this.hackathon = h;
     }
+
+    public void addVoto(Voto v) {
+        for(Voto v1 : voti){
+            //il giudice ha già votato
+            if(v1.getGiudice() == v.getGiudice()){
+                throw new RuntimeException("Il voto è già stato dato!");
+            }
+        }
+
+        voti.add(v);
+    }
 }

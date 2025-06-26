@@ -29,7 +29,7 @@ public class HUDOrganizzatore {
         organizzatoreFrame.setVisible(true);
 
         hackComboBox.addItem("");
-        controller.populateHackathonBox(hackComboBox);
+        controller.populateHackathonBoxOrganizzatore(hackComboBox);
 
         userList.addItem("");
         for(String user : c.getUserNames()) {

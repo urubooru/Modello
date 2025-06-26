@@ -35,9 +35,13 @@ public class TableClassificaModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(rowIndex==0)
-            return teamNames.get(columnIndex);
-        else
-            return votes.get(columnIndex);
+        switch(columnIndex) {
+            case 0:
+                return teamNames.get(rowIndex);
+            case 1:
+                return votes.get(rowIndex);
+        }
+
+        return null;
     }
 }

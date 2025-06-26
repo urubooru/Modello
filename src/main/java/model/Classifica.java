@@ -5,11 +5,10 @@ import java.util.ArrayList;
 public class Classifica {
     private Hackathon hackathon;
     private ArrayList<Team> teams;
-    private boolean classificaPubblicata;
 
     public Classifica(Hackathon hackathon) {
         this.hackathon = hackathon;
-        this.teams = new ArrayList<>();
+        this.teams = hackathon.getTeams();
     }
 
     public void aggiornaClassifica() {
@@ -25,14 +24,12 @@ public class Classifica {
         }
     }
 
-    public void pubblicaClassifica(){
-        this.classificaPubblicata = true;
+    public ArrayList<Team> getClassifica() {
+        return teams;
     }
 
-    public ArrayList<Team> getClassifica() {
-        if(!(this.classificaPubblicata)) throw new RuntimeException("Classifica non pubblicata");
-        aggiornaClassifica();
-        return new ArrayList<>(teams);
+    public Hackathon getHackathon() {
+        return hackathon;
     }
 
     public void aggiungiTeam(Team team) {

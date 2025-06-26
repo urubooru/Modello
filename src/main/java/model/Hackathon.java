@@ -35,6 +35,7 @@ public class Hackathon {
         this.teams = new ArrayList<>();
         this.giudici = new ArrayList<>();
         this.classifica = new Classifica(this);
+        classificaPubblicata = false;
     }
 
     public void aggiungiGiudice(Giudice giudice) {
@@ -47,6 +48,7 @@ public class Hackathon {
 
     // Altri getter...
     public String getTitolo() { return titolo; }
+
     public Classifica getClassifica() {
         return classifica;
     }
@@ -84,9 +86,14 @@ public class Hackathon {
         return organizzatore;
     }
 
+    public boolean isClassificaPubblicata() {
+        return classificaPubblicata;
+    }
+
     public void pubblicaClassifica() {
         if(classificaPubblicata) throw new RuntimeException("Classifica già pubblicata!");
 
+        classifica = new Classifica(this);
         classificaPubblicata = true;
     }
 
