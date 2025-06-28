@@ -3,6 +3,7 @@ package controller;
 import model.*;
 
 import javax.swing.*;
+import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -487,5 +488,125 @@ public class HackathonController {
                 break;
             }
         }
+    }
+
+    public void populateDataComboBox(JComboBox dataComboBox, String team, String hackathon) {
+        dataComboBox.addItem("");
+        for (Hackathon h : hackathons) {
+            if (h.getTitolo().equals(hackathon.toString())) {
+                for (Team t : h.getTeams()) {
+                    if (t.getNome().equals(team)) {
+                        for (Documento d : t.getDocumenti()) {
+                            dataComboBox.addItem(d.getData().toString());
+                        }
+                        break;
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+
+    public String getDescDoc(Object data, String team, String hackathon) {
+        if(data == null || data.toString().isEmpty()) { return ""; }
+
+        for (Hackathon h : hackathons) {
+            if (h.getTitolo().equals(hackathon.toString())) {
+                for (Team t : h.getTeams()) {
+                    if (t.getNome().equals(team)) {
+                        for (Documento d : t.getDocumenti()) {
+                            if(d.getData().toString().equals(data.toString())) {
+                                return d.getDescrizione();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return "";
+    }
+
+    public void addCommento(String commento, Object data, String hackathonName, String teamName) {
+        if(commento.isEmpty()){ throw new RuntimeException("Commento vuoto"); }
+        if(data == null || data.toString().isEmpty()) { throw new RuntimeException("Data non valida"); }
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathonName.toString())) {
+                for(Team t : h.getTeams()) {
+                    if(t.getNome().equals(teamName)) {
+                        for(Documento d : t.getDocumenti()) {
+                            if(d.getData().toString().equals(data.toString())) {
+                                Giudice g = getOrCreateGiudice(currentUser.getUsername());
+                                Commento c = new Commento(commento, g, d);
+                                d.aggiungiCommento(c);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public String getTeam(String hackathonName) {
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathonName.toString())) {
+                for(Team t : h.getTeams()) {
+                    for(Partecipante p : t.getMembri()){
+                        if(p.getUsername().equals(currentUser.getUsername())) {
+                            return t.getNome();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void populateDocumentiBox(JComboBox giudiceComboBox, String teamName, String hackathonName, Object data) {
+        giudiceComboBox.removeAllItems();
+        giudiceComboBox.addItem("");
+        if(data != null && (!data.toString().isEmpty())) {
+            for (Hackathon h : hackathons) {
+                if (h.getTitolo().equals(hackathonName)) {
+                    for (Team t : h.getTeams()) {
+                        if (t.getNome().equals(teamName)) {
+                            for (Documento d : t.getDocumenti()) {
+                                if(d.getData().toString().equals(data.toString())) {
+                                    for(Commento c : d.getCommenti()) {
+                                        giudiceComboBox.addItem(c.getGiudice().getUsername());
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public String getDescComm(Object dataDocumento, String teamName, String hackathonName, Object giudice) {
+        if(dataDocumento == null || dataDocumento.toString().isEmpty()) { return ""; }
+        if(giudice == null || giudice.toString().isEmpty()) { return ""; }
+
+        for(Hackathon h : hackathons) {
+            if(h.getTitolo().equals(hackathonName)) {
+                for(Team t : h.getTeams()) {
+                    if(t.getNome().equals(teamName)) {
+                        for (Documento d : t.getDocumenti()) {
+                            if (d.getData().toString().equals(dataDocumento.toString())) {
+                                for(Commento c : d.getCommenti()) {
+                                    if(c.getGiudice().getUsername().equals(giudice.toString())) {
+                                        return c.getTesto();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return "";
     }
 }

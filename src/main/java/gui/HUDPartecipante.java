@@ -93,19 +93,16 @@ public class HUDPartecipante {
         });
 
 
-
-//        vediDoc.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//            }
-//        });
-
-//        refreshButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                populateComboBox(c);
-//            }
-//        });
+        vediDoc.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    DocumentiCommenti doc = new DocumentiCommenti(controller, hackathonComboBox.getSelectedItem());
+                    doc.documentiCommentiPanel.setVisible(true);
+                } catch(Exception ex) {
+                    JOptionPane.showMessageDialog(partecipanteFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }

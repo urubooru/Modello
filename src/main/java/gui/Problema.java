@@ -19,7 +19,7 @@ public class Problema {
         problemaFrame.setVisible(true);
 
         //Non si resizava in automatico la finestra
-        problemaFrame.setSize(500, 500);
+        problemaFrame.setSize(500, 250);
 
         controller = con;
 

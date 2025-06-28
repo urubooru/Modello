@@ -13,7 +13,6 @@ public class Commento {
         this.giudice = giudice;
         this.documento = documento;
         this.data = new Date(System.currentTimeMillis());
-        documento.aggiungiCommento(this);
     }
 
     public String getTesto() {

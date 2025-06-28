@@ -18,14 +18,22 @@ public class Documento {
     }
 
     public void aggiungiCommento(Commento commento) {
+        for(Commento c : commenti) {
+            if(commento.getGiudice().getUsername().equals(c.getGiudice().getUsername())) {
+                throw new RuntimeException("Il giudice ha già commentato");
+            }
+        }
+
         commenti.add(commento);
     }
 
     public ArrayList<Commento> getCommenti() {
-        return new ArrayList<>(commenti);
+        return commenti;
     }
 
-    public String getDescrizione() {
-        return descrizione;
+    public String getDescrizione() { return descrizione; }
+
+    public Date getData() {
+        return this.data;
     }
 }

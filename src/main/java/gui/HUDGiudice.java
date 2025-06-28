@@ -46,14 +46,6 @@ public class HUDGiudice {
             }
         });
 
-        visualizzaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                //documentiTeam docGui = new documentiTeam(c, utente, teams.getSelectedItem());
-                //docGui.documentiPanel.setVisible(true);
-            }
-        });
-
         hackathonComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,7 +59,19 @@ public class HUDGiudice {
                 try{
                     c.votaTeam(hackathonComboBox.getSelectedItem(), teams.getSelectedItem(), votoText.getText());
                     JOptionPane.showMessageDialog(giudiceFrame, "Voto dato!");
-                } catch (Exception ex){
+                } catch (RuntimeException ex){
+                    JOptionPane.showMessageDialog(giudiceFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        visualizzaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    ProgressiTeam progressiTeam = new ProgressiTeam(controller, teams.getSelectedItem(), hackathonComboBox.getSelectedItem());
+                    progressiTeam.progressiPanel.setVisible(true);
+                } catch(RuntimeException ex){
                     JOptionPane.showMessageDialog(giudiceFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
