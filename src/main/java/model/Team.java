@@ -24,6 +24,15 @@ public class Team {
         return nome;
     }
 
+    public Documento getDocumento(Date data, String descrizione) {
+        for(Documento d : documenti) {
+            if(d.getData().equals(data) && d.getDescrizione().equals(descrizione)) {
+                return d;
+            }
+        }
+        return null;
+    }
+
     public int getPunteggio() {
         if (voti.isEmpty()) return 0;
         int sum = 0;
@@ -43,6 +52,10 @@ public class Team {
 
     public ArrayList<Documento> getDocumenti() {
         return new ArrayList<>(documenti);
+    }
+
+    public void addDocumento(Documento documento) {
+        documenti.add(documento);
     }
 
     public void addDocumento(String text) {
@@ -81,5 +94,9 @@ public class Team {
         }
 
         voti.add(v);
+    }
+
+    public Hackathon getHackathon() {
+        return hackathon;
     }
 }

@@ -18,4 +18,12 @@ public interface DAO {
     void retrieveTeams(ArrayList<String> teamNames, ArrayList<String> hackathonTeam) throws SQLException;
 
     void retrieveInviti(ArrayList<String> teamInvito, ArrayList<String> hackathonInvito, ArrayList<String> invitato) throws SQLException;
+
+    void retrieveDocs(ArrayList<Integer> ids, ArrayList<Date> dates, ArrayList<String> descrizioni, ArrayList<String> teamDocs) throws SQLException;
+
+    void retrieveGiudici(ArrayList<String> users, ArrayList<String> hackathonGiudici) throws SQLException;
+
+    void retrieveVotes(ArrayList<Integer> values, ArrayList<String> teamVoti, ArrayList<String> giudiciVoti) throws SQLException;
+
+    void retrieveComments(ArrayList<Integer> documenti, ArrayList<Date> datesComm, ArrayList<String> testo, ArrayList<String> giudice) throws SQLException;
 }

@@ -21,7 +21,7 @@ public class HackathonController {
     private Utente currentUser;
 
     public HackathonController() throws SQLException {
-        this.organizzatori = new ArrayList<>(); //input from db done
+        this.organizzatori = new ArrayList<Organizzatore>(); //input from db done
         this.utenti = new ArrayList<Utente>(); //input from db done
         this.hackathons = new ArrayList<Hackathon>(); //input from db done
         this.teams = new ArrayList<Team>();
@@ -29,12 +29,12 @@ public class HackathonController {
         this.giudici = new ArrayList<Giudice>();
 
 //      commento
-//      documento
-//      giudice
-//      invito
-//      partecipante
-//      team
-//      voto
+//      documento FATTO
+//      giudice FATTO
+//      voto FATTO
+//      invito FATTO
+//      partecipante FATTO
+//      team FATTO
 
         this.dao = new DAOImplementation();
 
@@ -45,8 +45,6 @@ public class HackathonController {
             Utente u = new Utente(mails.get(i), users.get(i), passwords.get(i));
             this.utenti.add(u);
         }
-        //pulizia per garbage collection
-        mails = passwords = users = null;
 
         users = new ArrayList<>();
         dao.retrieveOrganizzatori(users);
@@ -55,7 +53,6 @@ public class HackathonController {
             Organizzatore o = new Organizzatore(u);
             this.organizzatori.add(o);
         }
-        users = null;
 
         ArrayList<String> titles = new ArrayList<>(), sedi = new ArrayList<>(), problemi = new ArrayList<>(), organizzatoriH = new ArrayList<>();
         ArrayList<Date> dateInizi = new ArrayList<>(), dateFini = new ArrayList<>(), iniziIscr = new ArrayList<>(), finiIscr = new ArrayList<>();
@@ -84,26 +81,161 @@ public class HackathonController {
 
             this.hackathons.add(h);
         }
-        titles = sedi = problemi = organizzatoriH = null;
-        dateInizi = dateFini = iniziIscr = finiIscr = null;
-        maxIscr = maxTeam = null; clasP = regOpen = null;
         //prima di poter effettivamente scrivere gli hackathon in memoria
         //a livello implementativo non abbiamo ancora ne i teams ne i giudici ne la classifica(che dipende dai team)
 
         users = new ArrayList<>();
         ArrayList<String> teamPartecipante = new ArrayList<>();
         dao.retrievePartecipanti(users, teamPartecipante);
-        //per poter aggiungere i partecipanti necessitiamo sia dei team, che degli inviti
-
-
+        //Iniziamo a popolare i partecipanti
+        for(i = 0; i < users.size(); i++){
+            Utente u = getUtenteFromUsername(users.get(i));
+            Partecipante p = new Partecipante(u);
+            this.partecipanti.add(p);
+        }
+        //mancano i team(inviti accettati), e gli inviti
         ArrayList<String> teamNames = new ArrayList<>(), hackathonTeam = new ArrayList<>();
         dao.retrieveTeams(teamNames, hackathonTeam);
+        //Iniziamo a popolare i Team
+        for(i=0; i < teamNames.size(); i++){
+            for(Hackathon h : hackathons){
+                if(h.getTitolo().equals(hackathonTeam.get(i))){
+                    Team t = new Team(teamNames.get(i), h.getClassifica());
+                    t.setHackathon(h);
+                    this.teams.add(t);
+                    //h.addTeam(t);
+                    break;
+                }
+            }
+        }
+        //Mancano i partecipanti, i voti(Che dipendono dai giudici) e i documenti
+
+        //Ora possiamo inserire i team a cui partecipano i partecipanti
+        for(i = 0; i < partecipanti.size(); i++){
+            Partecipante p = partecipanti.get(i);
+            for(int j = 0; j < partecipanti.size(); j++) {
+                if(p.getUsername().equals(users.get(i))) {
+                    String teamNamePartecipante = teamPartecipante.get(i);
+                    Team t = null;
+                    Hackathon h = null;
+                    for (Team t1 : teams) {
+                        if (t1.getNome().equals(teamNamePartecipante)) {
+                            t = t1;
+                            h = t.getHackathon();
+                            break;
+                        }
+                    }
+                    p.addInvito(h, t);
+                    assert h != null;
+                    p.accettaInvito(h.getTitolo(), t.getNome());
+                    break;
+                }
+            }
+        }
 
         ArrayList<String> teamInvito = new ArrayList<>(), hackathonInvito = new ArrayList<>(), invitato = new ArrayList<>();
         dao.retrieveInviti(teamInvito, hackathonInvito, invitato);
+        //Creiamo gli inviti
+        for(i=0; i < teamInvito.size(); i++){
+            //Troviamo team e hackathon in base ai loro nomi/titoli
+            Team t = null; Hackathon h = null;
+            for(Team t1 : this.teams){
+                if(t1.getNome().equals(teamInvito.get(i))){
+                    t = t1;
+                    break;
+                }
+            }
+            for(Hackathon h1 : this.hackathons){
+                if(h1.getTitolo().equals(hackathonInvito.get(i))){
+                    h = h1;
+                    break;
+                }
+            }
 
-        //Iniziamo a popolare i partecipanti
+            //Invito inv = new Invito(getUtenteFromUsername(invitato.get(i)), h, t);
+            //per ogni invito dobbiamo ora aggiungerlo alla lista di inviti del partecipante
+            if(teamInvito.get(i).isEmpty() || teamInvito.get(i) == null){
+                Giudice g = getOrCreateGiudice(invitato.get(i));
+                this.giudici.add(g);
+                g.addInvito(h, t);
+            } else{
+                Partecipante p = getOrCreatePartecipante(invitato.get(i));
+                this.partecipanti.add(p);
+                p.addInvito(h, t);
+            }
+        }
 
+        ArrayList<Integer> ids = new ArrayList<>(); ArrayList<Date> dates = new ArrayList<>();
+        ArrayList<String> descrizioni = new ArrayList<>(), teamDocs = new ArrayList<>();
+        dao.retrieveDocs(ids, dates, descrizioni, teamDocs);
+        for(i = 0; i < ids.size(); i++){
+            Team t = null;
+            for(Team t1 : teams){
+                if(t1.getNome().equals(teamDocs.get(i))){
+                    t = t1;
+                }
+            }
+
+            assert t != null;
+            Documento d = new Documento(dates.get(i),descrizioni.get(i),t);
+            t.addDocumento(d);
+        }
+
+        ArrayList<Integer> documenti = new ArrayList<>(); ArrayList<Date> datesComm = new ArrayList<>();
+        ArrayList<String> testo = new ArrayList<>(), giudice = new ArrayList<>();
+        dao.retrieveComments(documenti, datesComm, testo, giudice);
+        for(i = 0; i < documenti.size(); i++){
+            for(int j = 0; j < ids.size(); j++){
+                Integer documentID = documenti.get(j);
+                if(documentID.equals(documenti.get(i))){
+                    //Get document from id
+                    Documento d = null;
+                    for(Team t1 : teams){
+                        if(t1.getNome().equals(teamDocs.get(j))){
+                            d = t1.getDocumento(dates.get(j), descrizioni.get(j));
+                        }
+                    }
+
+                    Giudice g = getOrCreateGiudice(giudice.get(i));
+                    Commento c = new Commento(testo.get(i),g,d,datesComm.get(i));
+                    assert d != null;
+                    d.aggiungiCommento(c);
+                    break;
+                }
+            }
+        }
+
+        users = new ArrayList<>(); ArrayList<String> hackathonGiudici = new ArrayList<>();
+        dao.retrieveGiudici(users, hackathonGiudici);
+        for(i = 0; i<users.size(); i++){
+            Giudice g = getOrCreateGiudice(users.get(i));
+            Hackathon h = null;
+            for(Hackathon h1 : this.hackathons){
+                if(h1.getTitolo().equals(hackathonGiudici.get(i))){
+                    h = h1;
+                }
+            }
+
+            g.addInvito(h,null);
+            g.accettaInvito(h.getTitolo(),"GIUDICE");
+
+            h.aggiungiGiudice(g);
+        }
+
+        ArrayList<Integer> values = new ArrayList<>(); ArrayList<String> teamVoti = new ArrayList<>(), giudiciVoti = new ArrayList<>();
+        dao.retrieveVotes(values, teamVoti, giudiciVoti);
+        for(i = 0; i<values.size(); i++){
+            Giudice g = getOrCreateGiudice(giudiciVoti.get(i));
+            Team t = null;
+            for(Team t1 : this.teams){
+                if(t1.getNome().equals(teamVoti.get(i))){
+                    t = t1;
+                }
+            }
+            Voto v = new Voto(t, g, values.get(i));
+            assert t != null;
+            t.addVoto(v);
+        }
 
         /*
         //TEST PRE DAO
@@ -209,6 +341,14 @@ public class HackathonController {
         for(Hackathon h : hackathons) {
             if(h.getTitolo().equals(hackathon.toString())) {
                 ArrayList<Team> teamDiH = h.getTeams();
+                if(h.getOrganizzatore().getUsername().equals(currentUser.getUsername())) {
+                    throw new RuntimeException("L'utente è l'organizzatore");
+                }
+                for(Giudice g : h.getGiudici()) {
+                    if(g.getUsername().equals(currentUser.getUsername())) {
+                        throw new RuntimeException("L'utente è già un giudice in questo Hackathon");
+                    }
+                }
                 for(Team t: teamDiH) {
                     if(t.getNome().equals(teamName)) {
                         throw new RuntimeException("Team already exists");

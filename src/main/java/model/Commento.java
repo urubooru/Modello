@@ -8,6 +8,13 @@ public class Commento {
     private Documento documento;
     private Date data;
 
+    public Commento(String testo, Giudice giudice, Documento documento, Date data) {
+        this.testo = testo;
+        this.giudice = giudice;
+        this.documento = documento;
+        this.data = data;
+    }
+
     public Commento(String testo, Giudice giudice, Documento documento) {
         this.testo = testo;
         this.giudice = giudice;
