@@ -5,6 +5,7 @@ import controller.HackathonController;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LoginForm {
     private JPanel loginPanel;
@@ -15,18 +16,20 @@ public class LoginForm {
     private JButton entraButton;
     private JButton registratiButton;
 
-    private HackathonController c = new HackathonController();
+    private HackathonController c ;
 
     static JFrame frame = new JFrame("Login");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         frame.setContentPane(new LoginForm().loginPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 
-    public LoginForm(){
+    public LoginForm() throws SQLException {
+        this.c = new HackathonController();
+
         entraButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

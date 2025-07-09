@@ -17,7 +17,7 @@ public class Invito {
     public Team getTeam() {
         return team;
     }
-    public Utente getInvitato() {
-        return invitato;
-    }
+//    public Utente getInvitato() {
+//        return invitato;
+//    }
 }

@@ -7,7 +7,7 @@ public class Voto {
     private Giudice giudice;
 
     public int getValore() {    return valore;  }
-    public void setValore(int valore) {  this.valore = valore;  }
+//    public void setValore(int valore) {  this.valore = valore;  }
 
     public Voto(Team team, Giudice giudice, int valore) {
         if(valore <= 0 || valore > 100) { throw new RuntimeException("Valore invalido"); }

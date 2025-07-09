@@ -12,11 +12,13 @@ public class Utente {
         this.password = password;
     }
 
-    public String getEmail(){ return email; }
-    protected void setEmail(String newEmail){ this.email = newEmail; }
+    //una serie di funzioni che potrebbe essere effettivamente utile ma non usate
+    //nella nostra implementazione
+//    public String getEmail(){ return email; }
+//    protected void setEmail(String newEmail){ this.email = newEmail; }
 
     public String getUsername(){ return username; }
-    protected void setUsername(String newUser){ this.username = newUser; }
+//    protected void setUsername(String newUser){ this.username = newUser; }
 
     public void setPassword(String password){
         if(password.isEmpty() || password==null)

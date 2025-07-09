@@ -23,7 +23,7 @@ public class Commento {
         return giudice;
     }
 
-    public Documento getDocumento() {
-        return documento;
-    }
+//    public Documento getDocumento() {
+//        return documento;
+//    }
 }

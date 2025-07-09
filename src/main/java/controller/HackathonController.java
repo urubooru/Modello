@@ -1,14 +1,18 @@
 package controller;
 
+import dao.DAO;
+import daoImplementation.DAOImplementation;
 import model.*;
 
 import javax.swing.*;
-import javax.xml.stream.events.Comment;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class HackathonController {
+    private DAO dao;
 
+    private ArrayList<Organizzatore> organizzatori;
     private ArrayList<Utente> utenti;
     private ArrayList<Partecipante> partecipanti;
     private ArrayList<Giudice> giudici;
@@ -16,14 +20,93 @@ public class HackathonController {
     private ArrayList<Team> teams;
     private Utente currentUser;
 
-    public HackathonController() {
-        this.utenti = new ArrayList<Utente>();
-        this.hackathons = new ArrayList<Hackathon>();
+    public HackathonController() throws SQLException {
+        this.organizzatori = new ArrayList<>(); //input from db done
+        this.utenti = new ArrayList<Utente>(); //input from db done
+        this.hackathons = new ArrayList<Hackathon>(); //input from db done
         this.teams = new ArrayList<Team>();
         this.partecipanti = new ArrayList<Partecipante>();
         this.giudici = new ArrayList<Giudice>();
 
-        //TEST
+//      commento
+//      documento
+//      giudice
+//      invito
+//      partecipante
+//      team
+//      voto
+
+        this.dao = new DAOImplementation();
+
+        ArrayList<String> mails = new ArrayList<>(), users = new ArrayList<>(), passwords = new ArrayList<>();
+        dao.retrieveUsers(mails, users, passwords);
+        int i;
+        for(i = 0; i < mails.size(); i++){
+            Utente u = new Utente(mails.get(i), users.get(i), passwords.get(i));
+            this.utenti.add(u);
+        }
+        //pulizia per garbage collection
+        mails = passwords = users = null;
+
+        users = new ArrayList<>();
+        dao.retrieveOrganizzatori(users);
+        for(i = 0; i < users.size(); i++){
+            Utente u = getUtenteFromUsername(users.get(i));
+            Organizzatore o = new Organizzatore(u);
+            this.organizzatori.add(o);
+        }
+        users = null;
+
+        ArrayList<String> titles = new ArrayList<>(), sedi = new ArrayList<>(), problemi = new ArrayList<>(), organizzatoriH = new ArrayList<>();
+        ArrayList<Date> dateInizi = new ArrayList<>(), dateFini = new ArrayList<>(), iniziIscr = new ArrayList<>(), finiIscr = new ArrayList<>();
+        ArrayList<Integer> maxIscr = new ArrayList<>(), maxTeam = new ArrayList<>();
+        ArrayList<Boolean> clasP = new ArrayList<>(), regOpen = new ArrayList<>();
+        dao.retrieveHackathons(titles, sedi, problemi, organizzatoriH, dateInizi, dateFini, iniziIscr, finiIscr, maxIscr, maxTeam, clasP, regOpen);
+        for(i = 0; i < titles.size(); i++){
+            //Cerchiamo l'organizzatore basandoci sull'username dalla tabella SQL
+            Organizzatore o = null;
+
+            for(int j = 0; j < organizzatori.size(); j++){
+                if(organizzatoriH.get(i).equals(organizzatori.get(j).getUsername())){
+                    o = organizzatori.get(j);
+                    break;
+                }
+            }
+
+            Hackathon h = new Hackathon(titles.get(i), sedi.get(i), dateInizi.get(i), dateFini.get(i), iniziIscr.get(i), finiIscr.get(i),
+                    maxIscr.get(i), maxTeam.get(i), o);
+            if(clasP.get(i)){
+                h.pubblicaClassifica();
+            }
+            if(regOpen.get(i)){
+                h.apriRegistrazioni();
+            }
+
+            this.hackathons.add(h);
+        }
+        titles = sedi = problemi = organizzatoriH = null;
+        dateInizi = dateFini = iniziIscr = finiIscr = null;
+        maxIscr = maxTeam = null; clasP = regOpen = null;
+        //prima di poter effettivamente scrivere gli hackathon in memoria
+        //a livello implementativo non abbiamo ancora ne i teams ne i giudici ne la classifica(che dipende dai team)
+
+        users = new ArrayList<>();
+        ArrayList<String> teamPartecipante = new ArrayList<>();
+        dao.retrievePartecipanti(users, teamPartecipante);
+        //per poter aggiungere i partecipanti necessitiamo sia dei team, che degli inviti
+
+
+        ArrayList<String> teamNames = new ArrayList<>(), hackathonTeam = new ArrayList<>();
+        dao.retrieveTeams(teamNames, hackathonTeam);
+
+        ArrayList<String> teamInvito = new ArrayList<>(), hackathonInvito = new ArrayList<>(), invitato = new ArrayList<>();
+        dao.retrieveInviti(teamInvito, hackathonInvito, invitato);
+
+        //Iniziamo a popolare i partecipanti
+
+
+        /*
+        //TEST PRE DAO
         Utente u = new Utente("1","1","1");
         this.utenti.add(u);
         Utente u2 = new Utente("2","2","2");
@@ -36,6 +119,7 @@ public class HackathonController {
         Date inizioIscrizioni = new Date(2024-1900,12-1,21);
         Date fineIscrizioni = new Date(2026-1900,12-1,28);
         this.hackathons.add(new Hackathon("Prova1","Napoli", startDate, endDate, inizioIscrizioni, fineIscrizioni,20,5, Org1));
+        */
     }
 
     public ArrayList<Hackathon> getHackathons() {
