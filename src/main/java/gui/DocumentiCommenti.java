@@ -27,7 +27,7 @@ public class DocumentiCommenti {
 
         controller = c;
 
-        JFrame documentiCommentiFrame = new JFrame("GUI Giudice");
+        JFrame documentiCommentiFrame = new JFrame("Visualizza commenti");
         documentiCommentiFrame.setContentPane(documentiCommentiPanel);
         documentiCommentiFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         documentiCommentiFrame.pack();
@@ -37,6 +37,7 @@ public class DocumentiCommenti {
 
         String teamName = controller.getTeam(hackathonName);
 
+        System.out.println(teamName + " " + hackathonName);
         controller.populateDataComboBox(dataComboBox, teamName, hackathonName);
 
         dataComboBox.addActionListener(new ActionListener() {

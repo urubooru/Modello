@@ -5,6 +5,7 @@ import controller.HackathonController;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class HUDGiudice {
     public JPanel hackathonPanel;
@@ -60,7 +61,9 @@ public class HUDGiudice {
                     c.votaTeam(hackathonComboBox.getSelectedItem(), teams.getSelectedItem(), votoText.getText());
                     JOptionPane.showMessageDialog(giudiceFrame, "Voto dato!");
                 } catch (RuntimeException ex){
-                    JOptionPane.showMessageDialog(giudiceFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(giudiceFrame, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException ex){
+                    JOptionPane.showMessageDialog(giudiceFrame, "Errore DB: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

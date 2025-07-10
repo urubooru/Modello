@@ -5,6 +5,7 @@ import controller.HackathonController;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class RegisterForm {
     private HackathonController controller;
@@ -35,6 +36,8 @@ public class RegisterForm {
                     JOptionPane.showMessageDialog(registerForm, "Utente registrato");
                 } catch (RuntimeException e1) {
                     JOptionPane.showMessageDialog(registerForm, "Error: " + e1.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(registerForm, "Errore database: " + ex.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

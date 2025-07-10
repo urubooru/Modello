@@ -5,6 +5,7 @@ import controller.HackathonController;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class ProgressiTeam {
     private JComboBox dataComboBox;
@@ -51,10 +52,11 @@ public class ProgressiTeam {
             public void actionPerformed(ActionEvent e) {
                 try{
                     controller.addCommento(commento.getText(), dataComboBox.getSelectedItem(), hackathonName, teamName);
-
                     JOptionPane.showMessageDialog(progressiPanel, "Commento aggiunto", "Commento", JOptionPane.INFORMATION_MESSAGE);
                 } catch(RuntimeException ex){
-                    JOptionPane.showMessageDialog(progressiPanel, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(progressiPanel, "Errore: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(progressiPanel, "Errore DB: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

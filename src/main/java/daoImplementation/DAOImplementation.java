@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ public class DAOImplementation implements DAO {
         conn = DatabaseConnection.getInstance();
 
         //Create string for query
-        String query = "SELECT * FROM " + '"' + "Utente" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Utente" + '"' + " ORDER BY username ASC";
         //Create statement using our connection + put it in the try
         try(Statement statement = conn.createStatement()) {
             //get our resultSet executing our statement
@@ -39,7 +40,7 @@ public class DAOImplementation implements DAO {
                                    ArrayList<Date> dateInizi, ArrayList<Date> dateFini, ArrayList<Date> iniziIscr, ArrayList<Date> finiIscr, ArrayList<Integer> maxIscr,
                                    ArrayList<Integer> maxTeam, ArrayList<Boolean> clasP, ArrayList<Boolean> regOpen) throws SQLException {
         conn = DatabaseConnection.getInstance();
-        String query = "SELECT * FROM " + '"' + "Hackathon" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Hackathon" + '"' + " ORDER BY titolo ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -66,7 +67,7 @@ public class DAOImplementation implements DAO {
     public void retrieveOrganizzatori(ArrayList<String> users) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Organizzatore" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Organizzatore" + '"' + " ORDER BY username ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -81,7 +82,7 @@ public class DAOImplementation implements DAO {
     public void retrievePartecipanti(ArrayList<String> users, ArrayList<String> teamNames) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Partecipante" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Partecipante" + '"' + " ORDER BY username ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()){
@@ -97,7 +98,7 @@ public class DAOImplementation implements DAO {
     public void retrieveTeams(ArrayList<String> teamNames, ArrayList<String> hackathonTeam) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Team" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Team" + '"' + " ORDER BY nome ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -113,7 +114,7 @@ public class DAOImplementation implements DAO {
     public void retrieveInviti(ArrayList<String> teamInvito, ArrayList<String> hackathonInvito, ArrayList<String> invitato) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Invito" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Invito" + '"' + " ORDER BY hackathon ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()){
@@ -131,7 +132,7 @@ public class DAOImplementation implements DAO {
     public void retrieveDocs(ArrayList<Integer> ids, ArrayList<Date> dates, ArrayList<String> descrizioni, ArrayList<String> teamDocs) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Documento" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Documento" + '"' + " ORDER BY id ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -150,7 +151,7 @@ public class DAOImplementation implements DAO {
     public void retrieveGiudici(ArrayList<String> users, ArrayList<String> hackathonGiudici) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " +'"' + "Giudice" + '"' + ";";
+        String query = "SELECT * FROM " +'"' + "Giudice" + '"' + " ORDER BY username ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -167,11 +168,11 @@ public class DAOImplementation implements DAO {
     public void retrieveVotes(ArrayList<Integer> values, ArrayList<String> teamVoti, ArrayList<String> giudiciVoti) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Voto" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Voto" + '"' + " ORDER BY giudice ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
-                values.add(rs.getInt("id"));
+                values.add(rs.getInt("valore"));
                 teamVoti.add(rs.getString("team"));
                 giudiciVoti.add(rs.getString("giudice"));
             }
@@ -185,7 +186,7 @@ public class DAOImplementation implements DAO {
     public void retrieveComments(ArrayList<Integer> documenti, ArrayList<Date> datesComm, ArrayList<String> testo, ArrayList<String> giudice) throws SQLException {
         conn = DatabaseConnection.getInstance();
 
-        String query = "SELECT * FROM " + '"' + "Commento" + '"' + ";";
+        String query = "SELECT * FROM " + '"' + "Commento" + '"' + " ORDER BY data ASC";
         try(Statement statement = conn.createStatement()){
             ResultSet rs = statement.executeQuery(query);
             while(rs.next()) {
@@ -194,6 +195,198 @@ public class DAOImplementation implements DAO {
                 testo.add(rs.getString("testo"));
                 giudice.add(rs.getString("giudice"));
             }
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void addUser(String email, String user, String pass) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Utente" + '"' + "(username, email, password) VALUES(?, ?, ?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, user);
+            statement.setString(2, email);
+            statement.setString(3, pass);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void updatePassword(String username, String password) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "UPDATE " + '"' + "Utente" + '"' + " SET password = ? WHERE username = ?";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, password);
+            statement.setString(2, username);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        conn = null;
+    }
+
+    public void addTeam(String nome, String titolo) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Team" + '"' + "(nome,hackathon) VALUES (?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, nome);
+            statement.setString(2, titolo);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        conn = null;
+    }
+
+    public void addPartecipante(String username, String nome) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Partecipante" + '"' + "(username,team) VALUES (?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, username);
+            statement.setString(2, nome);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        conn = null;
+    }
+
+    public void addInvito(String titolo, String nome, String invitatoUsername) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Invito" + '"' + "(hackathon,team,invitato) VALUES (?,?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, titolo);
+            statement.setString(2, nome);
+            statement.setString(3, invitatoUsername);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        conn = null;
+    }
+
+    public void addDocumento(String text, String nome) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Documento" + '"' + "(data,descrizione,team) VALUES (?,?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+            statement.setDate(1, java.sql.Date.valueOf(date));
+            statement.setString(2,text);
+            statement.setString(3,nome);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void pubblicaClassifica(String titolo) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "UPDATE " + '"' + "Hackathon" + '"' + " SET pubblicata = TRUE WHERE titolo = ?";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, titolo);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void apriRegistrazioni(String titolo) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "UPDATE " + '"' + "Hackathon" + '"' + " SET apriregistrazioni = TRUE WHERE titolo = ?";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, titolo);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void addVoto(int voto, String nome, String username) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "INSERT INTO " + '"' + "Voto" + '"' + "(valore,team,giudice) VALUES (?,?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setInt(1, voto);
+            statement.setString(2, nome);
+            statement.setString(3, username);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void setProblema(String titolo, String problema) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        String query = "UPDATE " + '"' + "Hackathon" + '"' + " SET problema = ? WHERE titolo = ?";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, problema);
+            statement.setString(2, titolo);
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void addCommento(String commento, String username, String descDoc, Date dataDocumento, String nomeTeam) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+
+        //Prima cerchiamo il documento in base alla data, il team e il contenuto
+        int id = 0;
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(dataDocumento);
+        String query = "SELECT id FROM " + '"' + "Documento" + '"' + " WHERE descrizione = '" + descDoc +
+                "' AND team = '" + nomeTeam + "' AND data = '" +  date + "'";
+        try(Statement statement = conn.createStatement()){
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            id = rs.getInt("id");
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        query = "INSERT INTO " + '"' + "Commento" + '"' + "(testo,giudice,documento,data) VALUES (?,?,?,?)";
+        try(PreparedStatement statement = conn.prepareStatement(query)){
+            statement.setString(1, commento);
+            statement.setString(2, username);
+            statement.setInt(3, id);
+            statement.setDate(4, java.sql.Date.valueOf(date));
+            statement.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        conn = null;
+    }
+
+    public void deleteInvito(String hackathonName, String teamName, String username) throws SQLException {
+        conn = DatabaseConnection.getInstance();
+        if (teamName.equals("GIUDICE")){ teamName = "";}
+
+        String query = "DELETE FROM " + '"' + "Invito" + '"' + " WHERE hackathon = ? AND team = ? AND invitato = ?";
+        try(PreparedStatement prepareStatement = conn.prepareStatement(query)){
+            prepareStatement.setString(1, hackathonName);
+            prepareStatement.setString(2, teamName);
+            prepareStatement.setString(3, username);
+            prepareStatement.executeUpdate();
         } catch(SQLException e){
             e.printStackTrace();
         }

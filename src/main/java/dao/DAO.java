@@ -26,4 +26,28 @@ public interface DAO {
     void retrieveVotes(ArrayList<Integer> values, ArrayList<String> teamVoti, ArrayList<String> giudiciVoti) throws SQLException;
 
     void retrieveComments(ArrayList<Integer> documenti, ArrayList<Date> datesComm, ArrayList<String> testo, ArrayList<String> giudice) throws SQLException;
+
+    void addUser(String email, String user, String pass) throws SQLException;
+
+    void updatePassword(String username, String password) throws SQLException;
+
+    void addTeam(String nome, String titolo) throws SQLException;
+
+    void addPartecipante(String username, String nome) throws SQLException;
+
+    void addInvito(String titolo, String nome, String invitatoUsername) throws SQLException;
+
+    void addDocumento(String text, String nome) throws SQLException;
+
+    void pubblicaClassifica(String titolo) throws SQLException;
+
+    void apriRegistrazioni(String titolo) throws SQLException;
+
+    void addVoto(int voto, String nome, String username) throws SQLException;
+
+    void setProblema(String titolo, String problema) throws SQLException;
+
+    void addCommento(String commento, String username, String descDoc, Date dataDocumento, String nomeTeam) throws SQLException;
+
+    void deleteInvito(String hackathonName, String teamName, String username) throws SQLException;
 }

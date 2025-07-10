@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserInterface {
@@ -57,6 +58,8 @@ public class UserInterface {
                     JOptionPane.showMessageDialog(userInterface, "Password cambiata");
                 } catch(RuntimeException e){
                     JOptionPane.showMessageDialog(userInterface, "Error: " + e.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
+                } catch(SQLException ex){
+                    JOptionPane.showMessageDialog(userInterface, "Errore DB: " + ex.getMessage(), "Error:", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -78,7 +81,6 @@ public class UserInterface {
 
                     TableClassificaModel tableModel = new TableClassificaModel();
                     hackathonTable.setModel(tableModel);
-                    System.out.println(listOfTeams.size());
                     if(!listOfTeams.isEmpty()){
                         tableModel.setTeamNames(listOfTeams);
                         tableModel.setVotes(voti);

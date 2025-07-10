@@ -36,4 +36,8 @@ public class Documento {
     public Date getData() {
         return this.data;
     }
+
+    public Team getTeam() {
+        return team;
+    }
 }
