@@ -72,6 +72,7 @@ public class HackathonController {
 
             Hackathon h = new Hackathon(titles.get(i), sedi.get(i), dateInizi.get(i), dateFini.get(i), iniziIscr.get(i), finiIscr.get(i),
                     maxIscr.get(i), maxTeam.get(i), o);
+            h.setProblema(problemi.get(i));
             if(clasP.get(i)){
                 h.pubblicaClassifica();
             }
@@ -89,11 +90,10 @@ public class HackathonController {
         dao.retrievePartecipanti(users, teamPartecipante);
         //Iniziamo a popolare i partecipanti
         for(i = 0; i < users.size(); i++){
-            Utente u = getUtenteFromUsername(users.get(i));
-            Partecipante p = new Partecipante(u);
-            this.partecipanti.add(p);
+            Partecipante p = getOrCreatePartecipante(users.get(i));
         }
         //mancano i team(inviti accettati), e gli inviti
+
         ArrayList<String> teamNames = new ArrayList<>(), hackathonTeam = new ArrayList<>();
         dao.retrieveTeams(teamNames, hackathonTeam);
         //Iniziamo a popolare i Team
@@ -111,26 +111,21 @@ public class HackathonController {
         //Mancano i partecipanti, i voti(Che dipendono dai giudici) e i documenti
 
         //Ora possiamo inserire i team a cui partecipano i partecipanti
-        for(i = 0; i < partecipanti.size(); i++){
-            Partecipante p = partecipanti.get(i);
-            for(int j = 0; j < partecipanti.size(); j++) {
-                if(p.getUsername().equals(users.get(i))) {
-                    String teamNamePartecipante = teamPartecipante.get(i);
-                    Team t = null;
-                    Hackathon h = null;
-                    for (Team t1 : teams) {
-                        if (t1.getNome().equals(teamNamePartecipante)) {
-                            t = t1;
-                            h = t.getHackathon();
-                            break;
-                        }
-                    }
-                    p.addInvito(h, t);
-                    assert h != null;
-                    p.accettaInvito(h.getTitolo(), t.getNome());
+        //NOTA: Questo codice funziona perché i nomi dei team sono univoci **anche** tra hackathon differenti
+        //(questo per via del database)
+        for(i = 0; i < users.size(); i++){
+            Partecipante p = getOrCreatePartecipante(users.get(i));
+            //Troviamo il team
+            Team t = null;
+            for(Team t1 : teams){
+                if(teamPartecipante.get(i).equals(t1.getNome())){
+                    t = t1;
                     break;
                 }
             }
+            assert t!=null;
+            p.setPartecipazione(t.getHackathon(), t);
+            t.addMembro(p);
         }
 
         ArrayList<String> teamInvito = new ArrayList<>(), hackathonInvito = new ArrayList<>(), invitato = new ArrayList<>();
@@ -297,9 +292,10 @@ public class HackathonController {
         return ret;
     }
 
-    public void creaAggiungiUtente(String email, String user, String pass) {
+    public void creaAggiungiUtente(String email, String user, String pass) throws SQLException {
         Utente u = new Utente(email, user, pass);
         this.addUtente(u);
+        dao.addUser(email,user,pass);
     }
 
     public void addUtente(Utente utente) {
@@ -329,13 +325,14 @@ public class HackathonController {
         return this.currentUser.getUsername();
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws SQLException {
         this.currentUser.setPassword(password);
+        dao.updatePassword(currentUser.getUsername(), password);
     }
 
     //PROBLEMA : NON CAPISCO PERCHÉ MA FA SEMPRE IL THROW RUNTIMEEXCEPTION
     //anche se non è stato cambiato nulla dall'ultimo commit
-    public void creaTeam(String teamName, Object hackathon) {
+    public void creaTeam(String teamName, Object hackathon) throws SQLException {
         if(teamName.isEmpty() || hackathon.toString().isEmpty()) { throw new RuntimeException("Empty team name or hackathon"); }
 
         for(Hackathon h : hackathons) {
@@ -360,9 +357,11 @@ public class HackathonController {
                 }
                 Team t1 = new Team(teamName, h.getClassifica());
                 t1.setHackathon(h);
+                dao.addTeam(t1.getNome(), h.getTitolo());
                 Partecipante p2 = getOrCreatePartecipante(this.currentUser.getUsername());
                 p2.setPartecipazione(h, t1);
                 t1.aggiungiMembro(p2);
+                dao.addPartecipante(currentUser.getUsername(), t1.getNome());
 
                 //THIS ALWAYS GIVES AN EXCEPTION, CAN'T EXACTLY FIGURE OUT WHY
                 h.addTeam(t1);
@@ -384,7 +383,7 @@ public class HackathonController {
         return null;
     }
 
-    public void invita(Object hackathon, Object username) {
+    public void invita(Object hackathon, Object username) throws SQLException {
         String invitatoUsername = username.toString();
         if(invitatoUsername.isEmpty()) { throw new RuntimeException("Invitato non valido"); }
         if(hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
@@ -397,6 +396,11 @@ public class HackathonController {
                 hack = h;
                 break;
             }
+        }
+
+        //Check if he is Organizer
+        if(hack.getOrganizzatore().getUsername().equals(invitatoUsername)) {
+            throw new RuntimeException("L'invitato è organizzatore");
         }
 
         //Check if he is a judge
@@ -419,8 +423,9 @@ public class HackathonController {
         if(currentUserPartecipante.getTeam(hack) == null){
             throw new RuntimeException("L'utente invitante non ha un team.");
         }
-        invitato.addInvito(hack, currentUserPartecipante.getTeam(hack));
-
+        Team currentTeam = currentUserPartecipante.getTeam(hack);
+        invitato.addInvito(hack, currentTeam);
+        dao.addInvito(hack.getTitolo(), currentTeam.getNome(), invitatoUsername);
     }
 
     private Partecipante getOrCreatePartecipante(String invitatoUsername) {
@@ -435,7 +440,7 @@ public class HackathonController {
         return p;
     }
 
-    public void aggiungiDocumento(Object h, String text){
+    public void aggiungiDocumento(Object h, String text) throws SQLException {
         if(h == null){ throw new RuntimeException("Hackathon non valido"); }
         if(text.isEmpty()){ throw new RuntimeException("Documento non valido"); }
 
@@ -454,6 +459,7 @@ public class HackathonController {
         }
 
         team.addDocumento(text);
+        dao.addDocumento(text, team.getNome());
     }
 
     public ArrayList<Invito> getInviti() {
@@ -492,7 +498,7 @@ public class HackathonController {
         return 0;
     }
 
-    public void rifiutaInvito(Object hackathon, Object team) {
+    public void rifiutaInvito(Object hackathon, Object team) throws SQLException {
         String hackathonName = hackathon.toString();
         String teamName = team.toString();
 
@@ -509,9 +515,11 @@ public class HackathonController {
             Giudice g = getOrCreateGiudice(currentUser.getUsername());
             g.rifiutaInvito(hackathonName, teamName);
         }
+
+        dao.deleteInvito(hackathonName, teamName, currentUser.getUsername());
     }
 
-    public void accettaInvito(Object hackathon, Object team) {
+    public void accettaInvito(Object hackathon, Object team) throws SQLException {
         String hackathonName = hackathon.toString();
         String teamName = team.toString();
 
@@ -533,6 +541,7 @@ public class HackathonController {
 
             Partecipante p = getOrCreatePartecipante(currentUser.getUsername());
             p.accettaInvito(hackathonName, teamName);
+            dao.deleteInvito(hackathonName, teamName, currentUser.getUsername());
             return;
         }
 
@@ -567,7 +576,7 @@ public class HackathonController {
         }
     }
 
-    public void publishRankings(Object obj) {
+    public void publishRankings(Object obj) throws SQLException {
         if (obj == null){ throw new RuntimeException("Hackathon non valido"); }
 
         String hackName = obj.toString();
@@ -577,12 +586,13 @@ public class HackathonController {
         for(Hackathon h : hackathons) {
             if(h.getTitolo().equals(hackName)) {
                 h.pubblicaClassifica();
+                dao.pubblicaClassifica(h.getTitolo());
                 return;
             }
         }
     }
 
-    public void openRegistration(Object obj) {
+    public void openRegistration(Object obj) throws SQLException {
         if (obj == null){ throw new RuntimeException("Hackathon non valido"); }
 
         String hackName = obj.toString();
@@ -592,11 +602,13 @@ public class HackathonController {
         for(Hackathon h : hackathons){
             if(h.getTitolo().equals(hackName)){
                 h.apriRegistrazioni();
+                dao.apriRegistrazioni(h.getTitolo());
+                break;
             }
         }
     }
 
-    public void invitaGiudice(Object hackathon, Object username) {
+    public void invitaGiudice(Object hackathon, Object username) throws SQLException {
         String invitatoUsername = username.toString();
         if(invitatoUsername.isEmpty()) { throw new RuntimeException("Invitato non valido"); }
         if(hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
@@ -627,6 +639,7 @@ public class HackathonController {
         }
 
         invitato.addInvito(hack, null);
+        dao.addInvito(hack.getTitolo(),"",invitatoUsername);
     }
 
     private Giudice getOrCreateGiudice(String invitatoUsername) {
@@ -664,12 +677,14 @@ public class HackathonController {
         return "";
     }
 
-    public void setProblema(Object hackathon, String problema) {
+    public void setProblema(Object hackathon, String problema) throws SQLException {
         if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
 
         for(Hackathon h: hackathons) {
             if(h.getTitolo().equals(hackathon.toString())) {
                 h.setProblema(problema);
+                dao.setProblema(h.getTitolo(), problema);
+                break;
             }
         }
     }
@@ -688,7 +703,7 @@ public class HackathonController {
         }
     }
 
-    public void votaTeam(Object hackathon, Object team, String vote) {
+    public void votaTeam(Object hackathon, Object team, String vote) throws SQLException {
         if(hackathon == null || hackathon.toString().isEmpty()) { throw new RuntimeException("Hackathon non valido"); }
         if(team== null || team.toString().isEmpty()) { throw new RuntimeException("Team non valido"); }
 
@@ -706,6 +721,7 @@ public class HackathonController {
                         Giudice g = getOrCreateGiudice(currentUser.getUsername());
                         Voto v = new Voto(t, g, voto);
                         t.addVoto(v);
+                        dao.addVoto(voto, t.getNome(), g.getUsername());
                         break;
                     }
                 }
@@ -752,7 +768,7 @@ public class HackathonController {
         return "";
     }
 
-    public void addCommento(String commento, Object data, String hackathonName, String teamName) {
+    public void addCommento(String commento, Object data, String hackathonName, String teamName) throws SQLException {
         if(commento.isEmpty()){ throw new RuntimeException("Commento vuoto"); }
         if(data == null || data.toString().isEmpty()) { throw new RuntimeException("Data non valida"); }
         for(Hackathon h : hackathons) {
@@ -764,6 +780,8 @@ public class HackathonController {
                                 Giudice g = getOrCreateGiudice(currentUser.getUsername());
                                 Commento c = new Commento(commento, g, d);
                                 d.aggiungiCommento(c);
+                                dao.addCommento(commento, g.getUsername(), d.getDescrizione(), d.getData(), d.getTeam().getNome());
+                                return;
                             }
                         }
                     }
