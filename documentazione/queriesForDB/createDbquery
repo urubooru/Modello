@@ -1,0 +1,72 @@
+CREATE TABLE "Utente" (
+    username VARCHAR(15) PRIMARY KEY,
+    email VARCHAR(15),
+    password VARCHAR(15)
+);
+
+CREATE TABLE "Organizzatore" (
+    username VARCHAR(15) UNIQUE
+);
+
+CREATE TABLE "Hackathon" (
+    titolo VARCHAR(15) PRIMARY KEY,
+    sede VARCHAR(15),
+    dataInizio DATE,
+    dataFine DATE,
+    inizioIscrizioni DATE,
+    fineIscrizioni DATE,
+    maxIscritti INTEGER,
+    dimMaxTeam INTEGER,
+    problema VARCHAR(100),
+    pubblicata BOOLEAN,
+    apriregistrazioni BOOLEAN,
+
+    organizzatore VARCHAR(15) REFERENCES "Organizzatore"(username)
+);
+
+CREATE TABLE "Giudice" (
+    username VARCHAR(15),
+    hackathon VARCHAR(15),
+	PRIMARY KEY (username, hackathon)
+);
+
+CREATE TABLE "Team"(
+    nome VARCHAR(15) PRIMARY KEY,
+    hackathon VARCHAR(15) REFERENCES "Hackathon"(titolo)
+);
+
+CREATE TABLE "Partecipante" (
+    username VARCHAR(15) REFERENCES "Utente"(username),
+    team VARCHAR(15) REFERENCES "Team"(nome)
+);
+
+--Non serve una classifica come classe in DB essendo TEAM già funzionale
+
+CREATE TABLE "Invito"(
+    hackathon VARCHAR(15) REFERENCES "Hackathon"(titolo),
+    team VARCHAR(15), --reference al team teoricamente, tuttavia non necessariamente dato che può essere nullo, ci assicureremo i valori accurati in java.
+    invitato VARCHAR (15) REFERENCES "Utente"(username)
+);
+
+CREATE TABLE "Voto"(
+    valore INTEGER,
+    team VARCHAR(15) REFERENCES "Team"(nome),
+    giudice VARCHAR(15) -- da qui si può recapitare l'hackathon e quindi il team è effettivamente univoco
+);
+
+CREATE TABLE "Documento"(
+    id SERIAL PRIMARY KEY ,
+    data DATE,
+    descrizione VARCHAR(100),
+    team VARCHAR(15) REFERENCES "Team"(nome) -- team non basta come chiave per identificare il team specifico
+);
+
+CREATE TABLE "Commento" (
+    testo VARCHAR(100),
+    giudice VARCHAR(15) REFERENCES "Utente"(username),
+    documento INTEGER REFERENCES "Documento"(id),
+    data DATE
+);
+
+
+

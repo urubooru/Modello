@@ -1,0 +1,58 @@
+Insert into "Utente"(email,username,password) VALUES ('1@gmail.com', '1', '1');
+INSERT INTO "Utente"(email, username, password) VALUES ('2@gmail.com', '2', '2');
+INSERT INTO "Utente"(email, username, password) VALUES ('3@gmail.com', '3', '3');
+INSERT INTO "Utente"(email, username, password) VALUES ('4@gmail.com', '4', '4');
+INSERT INTO "Utente"(email, username, password) VALUES ('5@gmail.com', '5', '5');
+INSERT INTO "Utente"(email, username, password) VALUES ('6@gmail.com', '6', '6');
+INSERT INTO "Utente"(email, username, password) VALUES ('7@gmail.com', '7', '7');
+INSERT INTO "Utente"(email, username, password) VALUES ('8@gmail.com', '8', '8');
+INSERT INTO "Utente"(email, username, password) VALUES ('9@gmail.com', '9', '9');
+
+select * from "Utente";
+
+Insert into "Organizzatore"(username) VALUES ('1');
+Insert into "Organizzatore"(username) VALUES ('5');
+
+select * from "Organizzatore";
+
+--cambia date iscrizioni a seconda di quando si vuole fare il test
+Insert into "Hackathon"(titolo, sede, dataInizio, dataFine, inizioIscrizioni, fineIscrizioni, maxIscritti, dimMaxTeam, problema, pubblicata, apriregistrazioni, organizzatore) 
+VALUES 
+('HackA', 'Napoli', '2025-07-01', '2025-12-01', '2025-07-20', '2025-07-22', 15, 3, 'Problema esempio hackathon A', false, false, '1');
+Insert into "Hackathon"(titolo, sede, dataInizio, dataFine, inizioIscrizioni, fineIscrizioni, maxIscritti, dimMaxTeam, problema, pubblicata, apriregistrazioni, organizzatore) 
+VALUES
+('HackB', 'Roma', '2025-06-01', '2025-12-01', '2025-07-20', '2025-07-22', 15, 3, 'Problema esempio hackathon B', false, false, '5');
+
+Select * from "Hackathon";
+--Il test di base ha come idea in testa 
+--hackathonA - user1 admin
+--    team1 - user2-3-4    team2 - user5-6-7 judges 8 9
+--hackathonB - user5 admin
+--    team3 - user1-2-3  team4 - user4-6   judges 7,8,9
+
+Insert into "Team"(nome,hackathon) VALUES('team1','HackA');
+Insert into "Team"(nome,hackathon) VALUES('team2','HackA');
+Insert into "Team"(nome,hackathon) VALUES('team3','HackB');
+Insert into "Team"(nome,hackathon) VALUES('team4','HackB');
+
+Insert into "Partecipante"(username,team) VALUES('2','team1');
+Insert into "Partecipante"(username,team) VALUES('3','team1');
+Insert into "Partecipante"(username,team) VALUES('4','team1');
+
+Insert into "Partecipante"(username,team) VALUES('5','team2');
+Insert into "Partecipante"(username,team) VALUES('6','team2');
+Insert into "Partecipante"(username,team) VALUES('7','team2');
+
+Insert into "Partecipante"(username,team) VALUES('1','team3');
+Insert into "Partecipante"(username,team) VALUES('2','team3');
+Insert into "Partecipante"(username,team) VALUES('3','team3');
+
+Insert into "Partecipante"(username,team) VALUES('4','team4');
+Insert into "Partecipante"(username,team) VALUES('6','team4');
+
+Insert into "Giudice"(username,hackathon) VALUES('8','HackA');
+Insert into "Giudice"(username,hackathon) VALUES('9','HackA');
+
+Insert into "Giudice"(username,hackathon) VALUES('7','HackB');
+Insert into "Giudice"(username,hackathon) VALUES('8','HackB');
+Insert into "Giudice"(username,hackathon) VALUES('9','HackB');
