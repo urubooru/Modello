@@ -16,7 +16,7 @@ public class LoginForm {
     private JButton entraButton;
     private JButton registratiButton;
 
-    private HackathonController c ;
+    private final HackathonController c;
 
     static JFrame frame = new JFrame("Login");
 
